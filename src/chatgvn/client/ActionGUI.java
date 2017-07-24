@@ -112,8 +112,9 @@ public class ActionGUI {
 
                     if (userName.equals("") || passWord.equals("") || email.equals("") || questionSecrect.equals("")) {
                         guiRegister._jlTextWaring.setVisible(true);
+                        return;
                     }
-
+                   
                     
                         
                    
