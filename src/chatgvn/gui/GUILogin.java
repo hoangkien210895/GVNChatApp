@@ -9,6 +9,7 @@ import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
@@ -29,7 +30,7 @@ public class GUILogin {
     public JFrame _jfMainWindow = new JFrame();
     public JLabel _jlForgot = new JLabel();
     public JTextField _jtfUserName = new JTextField();
-    public JTextField _jtfPassWord = new JTextField();
+    public JPasswordField _jtfPassWord = new JPasswordField();
     public JButton _jbLogin = new JButton();
     public JButton _jbRegister = new JButton();
 
