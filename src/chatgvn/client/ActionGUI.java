@@ -10,6 +10,7 @@ import chatgvn.gui.GUILogin;
 import chatgvn.gui.GUIRegister;
 import chatgvn.gui.GUIResetAccount;
 import static chatgvn.utils.ApiProject.API_LOGIN_POST;
+import static chatgvn.utils.ApiProject.API_REGISTER_POST;
 import chatgvn.utils.HandleApi;
 import chatgvn.utils.ValidateEmail;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,17 +29,17 @@ import org.json.JSONObject;
  * @author Phan Huy
  */
 public class ActionGUI {
-    
+
     Logger log = Logger.getLogger(ActionGUI.class.getName());
     private GUILogin _guiLogin;
     private String emailRegister;
     private CheckSendEmail checkSendEmail;
     private HandleApi handleApi;
-    
+
     public ActionGUI(GUILogin _guiLogin) {
         this._guiLogin = _guiLogin;
     }
-    
+
     public void actionClickButtonLogin() {
         _guiLogin._jbLogin.addActionListener(new ActionListener() {
             @Override
@@ -48,22 +51,25 @@ public class ActionGUI {
                     jsonObject.put("loginId", userName);
                     jsonObject.put("password", passWord);
                 } catch (JSONException ex) {
-                   log.warn("json error");
+                    log.warn("json error");
                 }
-             
+
                 System.out.println(jsonObject.toString());
                 System.out.println("url: " + API_LOGIN_POST);
+                String relust;
                 handleApi = new HandleApi();
                 try {
-                    handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
+                    relust = handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
                 } catch (IOException ex) {
-                    System.out.println("handle api eror 404");
+                    log.warn("handle api eror 404");
+                } catch (JSONException ex) {
+                    java.util.logging.Logger.getLogger(ActionGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         });
     }
-    
+
     public void actionClickLabelForget() {
         _guiLogin._jlForgot.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent mEvent) {
@@ -71,56 +77,106 @@ public class ActionGUI {
                 GUIResetAccount guiReset = new GUIResetAccount();
                 guiReset.buildWindowReset();
                 getEmailReset(guiReset);
-                
+
             }
-            
+
         });
     }
-    
+
     public void actionClickLabelRegister() {
         _guiLogin._jbRegister.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent ae) {
                 _guiLogin._jfMainWindow.setVisible(false);
                 GUIRegister guiRegister = new GUIRegister();
                 guiRegister.buildWindowRegister();
-                
+
                 actionButtonRegister(guiRegister);
-                
+
             }
-            
+
         });
     }
-    
+
     private void actionButtonRegister(final GUIRegister guiRegister) {
-        guiRegister._jbRegister.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                String userName = guiRegister._jtfUserName.getText().trim();
-                String passWord = guiRegister._jtfPassWord.getText().trim();
-                String email = guiRegister._jtfEmail.getText().trim();
-                String phoneNumber = guiRegister._jtfPhoneNumber.getText().trim();
-                String questionSecrect = guiRegister._jtfQuestionSecret.getText().trim();
-                System.out.println(userName.length());
-                if (userName.equals(null) || passWord == "" || email == "" || phoneNumber == "" || questionSecrect == "") {
-                    guiRegister._jlTextWaring.setVisible(true);
+        if (guiRegister._jbRegister.getText().equals("Register")) {
+            guiRegister._jbRegister.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                    String userName = guiRegister._jtfUserName.getText().trim();
+                    String passWord = guiRegister._jtfPassWord.getText().trim();
+                    String email = guiRegister._jtfEmail.getText().trim();
+                    String phoneNumber = guiRegister._jtfPhoneNumber.getText().trim();
+                    String questionSecrect = guiRegister._jtfQuestionSecret.getText().trim();
+
+                    if (userName.equals("") || passWord.equals("") || email.equals("") || questionSecrect.equals("")) {
+                        guiRegister._jlTextWaring.setVisible(true);
+                    }
+
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("loginId", userName);    //1
+                        jsonObject.put("userName", userName);   //2
+                        jsonObject.put("password", passWord);   //3
+                        jsonObject.put("password_question", "1");  //4
+                        jsonObject.put("password_answer", questionSecrect);   //5
+                        jsonObject.put("phone", phoneNumber);   //6
+                        jsonObject.put("email", email);   //7                                  
+                    } catch (JSONException ex) {
+                        log.warn("json error");
+                    }
+
+                    System.out.println(jsonObject.toString());
+                    System.out.println("url: " + API_REGISTER_POST);
+
+                    String relust;
+                    handleApi = new HandleApi();
+                    try {
+                        relust = handleApi.postApi(API_REGISTER_POST, jsonObject.toString());
+                        System.out.println("kq:tra ve");
+                        System.out.println(relust);
+                        JSONObject kq = new JSONObject(relust);
+                        if (kq.get("status").equals("success")) {
+                            actionResgisterSuccess(guiRegister);
+                        } else {
+                            guiRegister._jlTextWaring.setText("Created fail");
+                            guiRegister._jlTextWaring.setVisible(true);
+                        }
+                    } catch (IOException ex) {
+                        log.warn("handle api eror 404");
+                    } catch (JSONException ex) {
+                        log.warn("handle api eror 404 json");
+                    }
                 }
+
+            });
+        }
+    }
+
+    private void actionResgisterSuccess(final GUIRegister guiRegister) {
+        guiRegister._jlTextWaring.setText("Created success");
+        guiRegister._jbRegister.setText("DONE");
+        guiRegister._jbRegister.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _guiLogin._jfMainWindow.setVisible(true);
+                guiRegister._jfWindowRegister.setVisible(false);
             }
         });
     }
-    
+
     private void getEmailReset(final GUIResetAccount guiReset) {
-        
+
         guiReset._jbSendEmail.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent aEvent) {
                 emailRegister = guiReset._jtfEmail.getText();
                 guiReset._jtfEmail.setText("");
                 ValidateEmail validateEmail = new ValidateEmail();
-                
+
                 if (!validateEmail.isValidEmailAddress(emailRegister)) {
                     guiReset._jlNotification.setText("email not invalid");
                     return;
@@ -133,10 +189,10 @@ public class ActionGUI {
                     return;
                 }
             }
-            
+
         });
     }
-    
+
     private void beSendEmailReset(GUIResetAccount guiReset) {
         guiReset.buildWindowSendEmail();
     }

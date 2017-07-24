@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -22,7 +23,7 @@ public class HandleApi {
 
     private static final String USER_AGENT = "Mozilla/5.0";
 
-    public void postApi(String url, String jsonString) throws MalformedURLException, IOException {
+    public String postApi(String url, String jsonString) throws MalformedURLException, IOException, JSONException {
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -31,8 +32,8 @@ public class HandleApi {
         con.setRequestMethod("POST");
         con.setRequestProperty("User-Agent", USER_AGENT);
         con.setRequestProperty("Content-Type", "application/json");
-         con.setRequestProperty("Accept", "application/json");
-           con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
         // Send post request
         con.setDoOutput(true); //hỏi
@@ -54,7 +55,16 @@ public class HandleApi {
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
+
         in.close();
+        if (responseCode == 200) {
+            return response.toString();
+        } else {
+            JSONObject notresponse = new JSONObject();
+            notresponse.put("message", "Create fail");
+            notresponse.put("status", "error");
+            return notresponse.toString();
+        }
 
     }
 }

@@ -23,6 +23,7 @@ public class GUIRegister {
     private JLabel _jlEmail = new JLabel();
     private JLabel _jlPhoneNumber = new JLabel();
     private JLabel _jlQuestionSecret = new JLabel();
+    
     public JLabel _jlTextWaring = new JLabel();
     
     public JTextField _jtfUserName = new JTextField();
@@ -42,7 +43,7 @@ public class GUIRegister {
         _jfWindowRegister.setVisible(true);
     }
 
-    private void configureWindowLogin() {
+    public void configureWindowLogin() {
         _jfWindowRegister.setBackground(new java.awt.Color(255, 255, 255));
         _jfWindowRegister.getContentPane().setLayout(null);
         
@@ -98,7 +99,7 @@ public class GUIRegister {
         _jlTextWaring.setText("You mustn't leave space or email not validate ");
         _jlTextWaring.setForeground(new java.awt.Color(255, 0, 0));
         _jfWindowRegister.getContentPane().add(_jlTextWaring);
-        _jlTextWaring.setBounds(55, 230, 250, 20);
+        _jlTextWaring.setBounds(25, 230, 250, 20);
         _jlTextWaring.setVisible(false);
         
     }
