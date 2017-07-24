@@ -100,7 +100,6 @@ public class ActionGUI {
     }
 
     private void actionButtonRegister(final GUIRegister guiRegister) {
-        if (guiRegister._jbRegister.getText().equals("Register")) {
             guiRegister._jbRegister.addActionListener(new ActionListener() {
 
                 @Override
@@ -115,6 +114,9 @@ public class ActionGUI {
                         guiRegister._jlTextWaring.setVisible(true);
                     }
 
+                    
+                        
+                   
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("loginId", userName);    //1
@@ -151,14 +153,16 @@ public class ActionGUI {
                     }
                 }
 
-            });
-        }
+            });       
     }
 
     private void actionResgisterSuccess(final GUIRegister guiRegister) {
         guiRegister._jlTextWaring.setText("Created success");
-        guiRegister._jbRegister.setText("DONE");
-        guiRegister._jbRegister.addActionListener(new ActionListener() {
+        guiRegister._jbRegister.setVisible(false);
+        guiRegister._jbBACK.setVisible(true);
+        guiRegister._jlTextWaring.setVisible(true);
+       
+        guiRegister._jbBACK.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 _guiLogin._jfMainWindow.setVisible(true);

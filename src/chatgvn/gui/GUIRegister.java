@@ -33,7 +33,7 @@ public class GUIRegister {
     public JTextField _jtfQuestionSecret = new JTextField();
     
     public JButton _jbRegister = new JButton();
-
+    public JButton _jbBACK = new JButton();
     public void buildWindowRegister() {
         _jfWindowRegister.setTitle("Register");
         _jfWindowRegister.setSize(300, 280);
@@ -94,7 +94,12 @@ public class GUIRegister {
         
         _jbRegister.setText("Register");
         _jfWindowRegister.getContentPane().add(_jbRegister);
-        _jbRegister.setBounds(115, 200, 90, 25);
+        _jbRegister.setBounds(100, 200, 90, 25);
+        
+         _jbBACK.setText("BACK");
+        _jfWindowRegister.getContentPane().add(_jbBACK);
+        _jbBACK.setBounds(100, 200, 90, 25);
+        _jbBACK.setVisible(false);
         
         _jlTextWaring.setText("You mustn't leave space or email not validate ");
         _jlTextWaring.setForeground(new java.awt.Color(255, 0, 0));
