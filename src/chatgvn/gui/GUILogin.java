@@ -6,6 +6,10 @@
 package chatgvn.gui;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,6 +39,7 @@ public class GUILogin {
     public JButton _jbRegister = new JButton();
 
     public void buildWindowLogin() {
+        handlingclose();
         _jfMainWindow.setTitle(LOGIN);
         _jfMainWindow.setSize(350, 220);
         _jfMainWindow.setResizable(true);
@@ -42,6 +47,35 @@ public class GUILogin {
         configureWindowLogin();
         _jfMainWindow.setVisible(true);
 
+    }
+
+    private void press() {
+         _jtfUserName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+             if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+               
+             }
+            }
+        });
+         
+            _jtfPassWord.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+             if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                
+             }
+            }
+        });
+      
+    }
+
+    private void handlingclose() {
+        _jfMainWindow.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        _jfMainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                System.exit(0);
+            }
+
+        });
     }
 
     private void configureWindowLogin() {

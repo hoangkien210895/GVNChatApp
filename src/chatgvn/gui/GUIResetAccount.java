@@ -37,6 +37,7 @@ public class GUIResetAccount {
     public JLabel _jlNotification = new JLabel();
 
     public void buildWindowReset() {
+        handlingclose();
         _jfMainWindow.setTitle(RESET);
         _jfMainWindow.setSize(290, 190);
         _jfMainWindow.setResizable(false);
@@ -44,14 +45,38 @@ public class GUIResetAccount {
         configureWindowLogin();
         _jfMainWindow.setVisible(true);
     }
+    
+    private void handlingclose() {
+        _jfMainWindow.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        _jfMainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                System.exit(0);
+            }
+
+        });
+    }
+    
+    
+    
+    
 
     public void buildWindowSendEmail() {
+        handlingclosesendmai();
         _jfMainWindow.setVisible(false);
         _jfBeSendWindow.setSize(350, 170);
         _jfBeSendWindow.setResizable(false);
         _jfBeSendWindow.setLocationRelativeTo(null);
         configureWindowBeSendEmail();
         _jfBeSendWindow.setVisible(true);
+    }
+   private void handlingclosesendmai() {
+        _jfBeSendWindow.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        _jfBeSendWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                System.exit(0);
+            }
+
+        });
     }
 
     private void configureWindowLogin() {

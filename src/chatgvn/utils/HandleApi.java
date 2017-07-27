@@ -34,7 +34,7 @@ public class HandleApi {
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
+        
         // Send post request
         con.setDoOutput(true); //hỏi
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
