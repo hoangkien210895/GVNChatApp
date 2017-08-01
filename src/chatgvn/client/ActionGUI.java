@@ -37,7 +37,8 @@ public class ActionGUI {
     private String emailRegister;
     private CheckSendEmail checkSendEmail;
     private HandleApi handleApi;
-    private JSONObject info_action; 
+    private JSONObject info_action;
+
     public ActionGUI(GUILogin _guiLogin) {
         this._guiLogin = _guiLogin;
         press();
@@ -48,39 +49,7 @@ public class ActionGUI {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
                     if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-
-                        String userName = _guiLogin._jtfUserName.getText().trim();
-                        String passWord = _guiLogin._jtfPassWord.getText().trim();
-                        JSONObject jsonObject = new JSONObject();
-                        try {
-                            jsonObject.put("loginId", userName);
-                            jsonObject.put("password", passWord);
-                        } catch (JSONException ex) {
-                            log.warn("json error");
-                        }
-
-                        System.out.println(jsonObject.toString());
-                        System.out.println("url: " + API_LOGIN_POST);
-                        String relust = null;
-                        handleApi = new HandleApi();
-                        try {
-                            relust = handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
-                            System.out.println("kq:tra ve");
-                            System.out.println(relust);
-                            info_action = new JSONObject(relust);
-                            if (info_action.get("status").equals("success")) {
-                                _guiLogin._jfMainWindow.setFocusableWindowState(false);
-                                _guiLogin._jfMainWindow.setVisible(false);
-                                GUIChat guichat = new GUIChat(info_action);
-                                guichat.buildWindowLogin();
-                            }
-
-                        } catch (IOException ex) {
-                            log.warn("handle api eror 404");
-                        } catch (JSONException ex) {
-                            log.warn("handle api JSON eror 404");
-                        }
-
+                        handleLogin();
                     }
 
                 }
@@ -91,41 +60,46 @@ public class ActionGUI {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
 
-                    String userName = _guiLogin._jtfUserName.getText().trim();
-                    String passWord = _guiLogin._jtfPassWord.getText().trim();
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("loginId", userName);
-                        jsonObject.put("password", passWord);
-                    } catch (JSONException ex) {
-                        log.warn("json error");
-                    }
-
-                    System.out.println(jsonObject.toString());
-                    System.out.println("url: " + API_LOGIN_POST);
-                    String relust = null;
-                    handleApi = new HandleApi();
-                    try {
-                        relust = handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
-                        System.out.println("kq:tra ve");
-                        System.out.println(relust);
-                        info_action = new JSONObject(relust);
-                        if (info_action.get("status").equals("success")) {
-                            _guiLogin._jfMainWindow.setFocusableWindowState(false);
-                            _guiLogin._jfMainWindow.setVisible(false);
-                            GUIChat guichat = new GUIChat(info_action);
-                            guichat.buildWindowLogin();
-                        }
-
-                    } catch (IOException ex) {
-                        log.warn("handle api eror 404");
-                    } catch (JSONException ex) {
-                        log.warn("handle api JSON eror 404");
-                    }
+                    handleLogin();
 
                 }
             }
         });
+
+    }
+
+    void handleLogin() {
+        String userName = _guiLogin._jtfUserName.getText().trim();
+        String passWord = _guiLogin._jtfPassWord.getText().trim();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("loginId", userName);
+            jsonObject.put("password", passWord);
+        } catch (JSONException ex) {
+            log.warn("json error");
+        }
+
+        System.out.println(jsonObject.toString());
+        System.out.println("url: " + API_LOGIN_POST);
+        String relust = null;
+        handleApi = new HandleApi();
+        try {
+            relust = handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
+            System.out.println("kq:tra ve");
+            System.out.println(relust);
+            info_action = new JSONObject(relust);
+            if (info_action.get("status").equals("success")) {
+                _guiLogin._jfMainWindow.setFocusableWindowState(false);
+                _guiLogin._jfMainWindow.setVisible(false);
+                GUIChat guichat = new GUIChat(info_action,userName);
+                guichat.buildWindowLogin();
+            }
+
+        } catch (IOException ex) {
+            log.warn("handle api eror 404");
+        } catch (JSONException ex) {
+            log.warn("handle api JSON eror 404");
+        }
 
     }
 
@@ -134,41 +108,7 @@ public class ActionGUI {
         _guiLogin._jbLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                String userName = _guiLogin._jtfUserName.getText().trim();
-                String passWord = _guiLogin._jtfPassWord.getText().trim();
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("loginId", userName);
-                    jsonObject.put("password", passWord);
-                } catch (JSONException ex) {
-                    log.warn("json error");
-                }
-
-                System.out.println(jsonObject.toString());
-                System.out.println("url: " + API_LOGIN_POST);
-                String relust = null;
-                handleApi = new HandleApi();
-                try {
-                    relust = handleApi.postApi(API_LOGIN_POST, jsonObject.toString());
-                    System.out.println("kq:tra ve");
-                    System.out.println(relust);
-                     info_action = new JSONObject(relust);
-                    if (info_action.get("status").equals("success")) {
-                        _guiLogin._jfMainWindow.setFocusableWindowState(false);
-                        _guiLogin._jfMainWindow.setVisible(false);
-                        GUIChat guichat = new GUIChat(info_action);
-                        guichat.buildWindowLogin();
-                    }
-
-                } catch (IOException ex) {
-                    log.warn("handle api eror 404");
-                    System.exit(0);
-                } catch (JSONException ex) {
-                    log.warn("handle api JSON eror 404");
-                    System.exit(0);
-                }
-
+                handleLogin();
             }
         });
     }

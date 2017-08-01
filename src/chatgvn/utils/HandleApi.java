@@ -34,7 +34,7 @@ public class HandleApi {
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        
+
         // Send post request
         con.setDoOutput(true); //hỏi
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -59,7 +59,7 @@ public class HandleApi {
         in.close();
         if (responseCode == 200) {
             return response.toString();
-        } else {
+        } else { 
             JSONObject notresponse = new JSONObject();
             notresponse.put("message", "Create fail");
             notresponse.put("status", "error");
