@@ -91,7 +91,7 @@ public class ActionGUI {
             if (info_action.get("status").equals("success")) {
                 _guiLogin._jfMainWindow.setFocusableWindowState(false);
                 _guiLogin._jfMainWindow.setVisible(false);
-                GUIChat guichat = new GUIChat(info_action,userName);
+                GUIChat  guichat = new GUIChat(info_action,userName);
                 guichat.buildWindowLogin();
             }
 

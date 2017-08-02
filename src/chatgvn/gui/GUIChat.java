@@ -5,14 +5,19 @@
  */
 package chatgvn.gui;
 
+
 import chatgvn.client.ActionGUI;
 import static chatgvn.utils.ApiProject.API_CHECK_USERNAME_POST;
+import static chatgvn.utils.ApiProject.API_CheckOnline_POST;
 import static chatgvn.utils.ApiProject.API_LOGOUT_POST;
 import chatgvn.utils.HandleApi;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -24,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,19 +58,29 @@ public class GUIChat {
     public static JButton _jbsetinfo = new JButton();
     Logger log = Logger.getLogger(ActionGUI.class.getName());
     //list online
-    public JList _ListOnline;
-    public DefaultListModel _JlistModel;
-    public JScrollPane _ListOnlineScrollPane;
+    public static JList _ListOnline;
+    public static DefaultListModel _JlistModel;
+    public static JScrollPane _ListOnlineScrollPane;
     //
+    public JTextField ToName = new JTextField();
+
+   
 
     public GUIChat(JSONObject info, String idlogin) {
         this._InfoTokenLogin = info;
         this._LoginId = idlogin;
+        //  buildWindowLogin();
+//        try {
+//            _clientHandleSocket = new ClientHandleSocket(new URI("ws://10.64.1:1234/chat"));
+//        } catch (URISyntaxException ex) {
+//            System.out.println("error");
+//        }
+        // getMessageServer();
     }
 
     public void buildWindowLogin() {
-        press();
-        HandingCheckUser();
+        _JlistModel = new DefaultListModel();
+
         handlingclose();
         _MainWindow.setTitle("ChatGvn");
         _MainWindow.setSize(1000, 800);
@@ -76,7 +92,9 @@ public class GUIChat {
         } catch (JSONException ex) {
             System.out.println("cau hinh loi roi ");
         }
-
+        press();
+        HandingCheckUser();
+        HandingCheckOnline();
         _MainWindow.setVisible(true);
 
     }
@@ -85,7 +103,8 @@ public class GUIChat {
         _Chatmsg.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                    _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
+                  //  _clientHandleSocket.sendMessage(_Chatmsg.getText());
+                   _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
                     _Chatmsg.setText("");
                 }
             }
@@ -94,6 +113,7 @@ public class GUIChat {
         _jbsendchat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+               // _clientHandleSocket.sendMessage(_Chatmsg.getText());
                 _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
                 _Chatmsg.setText("");
             }
@@ -112,6 +132,14 @@ public class GUIChat {
                 _jbsetinfo.setEnabled(false);
             }
         });
+
+        _ListOnline.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                //    System.out.println(_ListOnline.getSelectedValue());
+                ToName.setText((String) _ListOnline.getSelectedValue());
+            }
+        });
+
     }
 
     public static void HandingCheckUser() {
@@ -162,6 +190,33 @@ public class GUIChat {
         });
     }
 
+    public static void HandingCheckOnline() {
+        System.out.println("check Online---------");
+        HandleApi handle = new HandleApi();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("auth_token", _InfoTokenLogin.get("token"));
+            String StrJsonCheckUser = handle.postApi(API_CheckOnline_POST, jsonObject.toString());
+            System.out.println(StrJsonCheckUser);
+
+            JSONArray kq = new JSONArray(StrJsonCheckUser);
+            System.out.println("JSONarray:");
+            System.out.println(kq);
+
+            System.out.println("=====");
+            _JlistModel.clear();
+            for (int i = 0; i < kq.length(); i++) {
+                _JlistModel.addElement(kq.getJSONObject(i).get("user"));
+            }
+
+        } catch (JSONException ex) {
+            System.out.println("kamezogogo");
+        } catch (IOException ex) {
+
+        }
+        System.out.println("Online------");
+    }
+
     private void configureWindowLogin() throws JSONException {
         //    _MainWindow.setBackground(new java.awt.Color(0, 0, 0));
         _MainWindow.getContentPane().setLayout(null);
@@ -169,14 +224,13 @@ public class GUIChat {
 
         //create 1 list
         //set model list
-        _JlistModel = new DefaultListModel();
-        _JlistModel.addElement("hahaha");
-        //set list
-        JList _ListOnline = new JList(_JlistModel);
+        //_JlistModel = new DefaultListModel();
+        //set list 54	117	23 // 16	54	103
+        _ListOnline = new JList(_JlistModel);
         _ListOnline.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         _ListOnline.setSelectedIndex(0);
-        _ListOnline.setForeground(new java.awt.Color(91, 189, 43));
-        _ListOnline.setSelectionForeground(new java.awt.Color(110, 195, 201));
+        _ListOnline.setForeground(new java.awt.Color(54, 117, 23));
+        _ListOnline.setSelectionForeground(new java.awt.Color(16, 54, 103));
         //set list on ScrollPane
         _ListOnlineScrollPane = new JScrollPane(_ListOnline);
         _ListOnlineScrollPane.setBounds(0, 200, 260, 560);
@@ -204,20 +258,16 @@ public class GUIChat {
         _MainWindow.getContentPane().add(_ChatSlogan);
         _ChatSlogan.setBounds(270, 685, 300, 25);
 
-        // _mineinfo
-//        _mineinfo.setText(_InfoTokenLogin.toString());
-//        _MainWindow.getContentPane().add(_mineinfo);
-//        _mineinfo.setBounds(0, 0, 300, 25);
         //_nameinfo
-      //  _nameinfo.setText("User Name:" + JsonCheckUser.getString("userName"));
+        //  _nameinfo.setText("User Name:" + JsonCheckUser.getString("userName"));
         _MainWindow.getContentPane().add(_nameinfo);
         _nameinfo.setBounds(10, 40, 300, 50);
         //_EmailInfo
-      //  _EmailInfo.setText("Email:" + JsonCheckUser.getString("email"));
+        //  _EmailInfo.setText("Email:" + JsonCheckUser.getString("email"));
         _MainWindow.getContentPane().add(_EmailInfo);
         _EmailInfo.setBounds(10, 60, 300, 50);
         //_PhoneInfo
-      //  _PhoneInfo.setText("SĐT:" + JsonCheckUser.getString("phone"));
+        //  _PhoneInfo.setText("SĐT:" + JsonCheckUser.getString("phone"));
         _MainWindow.getContentPane().add(_PhoneInfo);
         _PhoneInfo.setBounds(10, 80, 300, 50);
 
@@ -229,5 +279,13 @@ public class GUIChat {
         _gioithieuinfo.setText("------THÔNG TIN NGƯỜI DÙNG------------");
         _MainWindow.getContentPane().add(_gioithieuinfo);
         _gioithieuinfo.setBounds(10, 0, 500, 50);
+        /////
+
+        _MainWindow.getContentPane().add(ToName);
+        ToName.setEnabled(false);
+        ToName.setDisabledTextColor(Color.RED);
+        ToName.setBounds(500, 170, 100, 20);
     }
+
+   
 }

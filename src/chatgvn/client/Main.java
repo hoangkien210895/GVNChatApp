@@ -5,6 +5,7 @@
  */
 package chatgvn.client;
 
+import chatgvn.gui.GUIChat;
 import chatgvn.gui.GUILogin;
 import chatgvn.gui.GUIResetAccount;
 
@@ -20,7 +21,7 @@ public class Main {
     public static void main(String[] args) {
         GUILogin loginGui = new GUILogin();
         ActionGUI actionGui = new ActionGUI(loginGui);
-
+                 
         displayLogin(loginGui);
         actionLogin(actionGui);
         actionRegister(actionGui);
