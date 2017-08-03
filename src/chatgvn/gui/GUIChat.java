@@ -5,8 +5,8 @@
  */
 package chatgvn.gui;
 
-
 import chatgvn.client.ActionGUI;
+import chatgvn.socket.WebsocketClientEndpoint;
 import static chatgvn.utils.ApiProject.API_CHECK_USERNAME_POST;
 import static chatgvn.utils.ApiProject.API_CheckOnline_POST;
 import static chatgvn.utils.ApiProject.API_LOGOUT_POST;
@@ -62,25 +62,29 @@ public class GUIChat {
     public static DefaultListModel _JlistModel;
     public static JScrollPane _ListOnlineScrollPane;
     //
-    public JTextField ToName = new JTextField();
 
-   
+    public static JButton _jbDanhSach = new JButton();
+    public static JButton _jbAcepFriend = new JButton();
+    public static JButton _jbAndFriend = new JButton();
+
+    //
+    public static JList _ListOnlinekb;
+    public static DefaultListModel _JlistModelkb;
+    public static JScrollPane _ListOnlineScrollPanekb;
+
+    public JTextField ToName = new JTextField();
+    //
+    public static WebsocketClientEndpoint a;
 
     public GUIChat(JSONObject info, String idlogin) {
         this._InfoTokenLogin = info;
         this._LoginId = idlogin;
-        //  buildWindowLogin();
-//        try {
-//            _clientHandleSocket = new ClientHandleSocket(new URI("ws://10.64.1:1234/chat"));
-//        } catch (URISyntaxException ex) {
-//            System.out.println("error");
-//        }
-        // getMessageServer();
+
     }
 
     public void buildWindowLogin() {
         _JlistModel = new DefaultListModel();
-
+        _JlistModelkb = new DefaultListModel();
         handlingclose();
         _MainWindow.setTitle("ChatGvn");
         _MainWindow.setSize(1000, 800);
@@ -88,9 +92,23 @@ public class GUIChat {
         _MainWindow.setLocationRelativeTo(null);
 
         try {
+            a = new WebsocketClientEndpoint(new URI("ws://10.64.1.88:1234/chat"));
+
+            a.addMessageHandler(new WebsocketClientEndpoint.MessageHandler() {
+                public void handleMessage(String message) {
+                    System.out.println("=========hehehehehehe========");
+                    System.out.println(message);
+                    System.out.println("=========hehehehehehe=======");
+
+                }
+
+            });
+
             configureWindowLogin();
         } catch (JSONException ex) {
             System.out.println("cau hinh loi roi ");
+        } catch (URISyntaxException ex) {
+            System.out.println("websocket loi r ");
         }
         press();
         HandingCheckUser();
@@ -103,8 +121,8 @@ public class GUIChat {
         _Chatmsg.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                  //  _clientHandleSocket.sendMessage(_Chatmsg.getText());
-                   _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
+                    a.sendMessage(_Chatmsg.getText());
+                    _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
                     _Chatmsg.setText("");
                 }
             }
@@ -113,11 +131,12 @@ public class GUIChat {
         _jbsendchat.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-               // _clientHandleSocket.sendMessage(_Chatmsg.getText());
+                a.sendMessage(_Chatmsg.getText());
                 _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
                 _Chatmsg.setText("");
             }
         });
+
         _jbsetinfo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -139,6 +158,27 @@ public class GUIChat {
                 ToName.setText((String) _ListOnline.getSelectedValue());
             }
         });
+        
+        
+              _jbAcepFriend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                
+                _ListOnlineScrollPane.setVisible(false);
+                _ListOnlineScrollPanekb.setVisible(true);
+            }
+        });
+        
+        
+        _jbDanhSach.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+              
+                _ListOnlineScrollPane.setVisible(true);
+                _ListOnlineScrollPanekb.setVisible(false);
+            }
+        });
+        
 
     }
 
@@ -236,6 +276,21 @@ public class GUIChat {
         _ListOnlineScrollPane.setBounds(0, 200, 260, 560);
         _MainWindow.getContentPane().add(_ListOnlineScrollPane);
 
+        ////create 1 list kb
+        _JlistModelkb.addElement("1111");
+        _JlistModelkb.addElement("222");
+        _JlistModelkb.addElement("3333");
+        _ListOnlinekb = new JList(_JlistModelkb);
+        _ListOnlinekb.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _ListOnlinekb.setSelectedIndex(0);
+        _ListOnlinekb.setForeground(new java.awt.Color(54, 117, 23));
+        _ListOnlinekb.setSelectionForeground(new java.awt.Color(16, 54, 103));
+        //set list on ScrollPane
+        _ListOnlineScrollPanekb = new JScrollPane(_ListOnlinekb);
+        _ListOnlineScrollPanekb.setBounds(0, 200, 260, 560);
+        _ListOnlineScrollPanekb.setVisible(false);
+        _MainWindow.getContentPane().add(_ListOnlineScrollPanekb);
+
         // _ChatWindow.
         _ChatWindow.setForeground(new java.awt.Color(0, 0, 255));
         _ChatWindow.setEditable(false);
@@ -281,11 +336,24 @@ public class GUIChat {
         _gioithieuinfo.setBounds(10, 0, 500, 50);
         /////
 
+        /////_jbDanhSach
+        _jbDanhSach.setText("Friend");
+        _MainWindow.getContentPane().add(_jbDanhSach);
+        _jbDanhSach.setBounds(10, 170, 90, 25);
+
+        ///
+        _jbAcepFriend.setText("Kết bạn");
+        _MainWindow.getContentPane().add(_jbAcepFriend);
+        _jbAcepFriend.setBounds(110, 170, 90, 25);
+
+        _jbAndFriend.setText("Add Friend");
+        _MainWindow.getContentPane().add(_jbAndFriend);
+        _jbAndFriend.setBounds(210, 170, 150, 25);
+
         _MainWindow.getContentPane().add(ToName);
-        ToName.setEnabled(false);
+       // ToName.setEnabled(false);
         ToName.setDisabledTextColor(Color.RED);
         ToName.setBounds(500, 170, 100, 20);
     }
 
-   
 }
