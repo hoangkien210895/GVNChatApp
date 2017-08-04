@@ -18,4 +18,7 @@ public class ApiProject {
     public static String API_SET_USERNAME_POST = "http://localhost:4567/account/setusername";
     public static String API_ChangPass_POST = "http://localhost:4567/changepassword";
     public static String API_CheckOnline_POST = "http://localhost:4567/account/getuseronline";
+    public static String API_CheckGroup_POST = "http://localhost:4567/group/getaccepted/";
+    public static String API_CheckRequest_POST = "http://localhost:4567/group/getlistrequest/";
+    public static String API_LoadLogChat_POST="http://localhost:4567/group/get";
 }
