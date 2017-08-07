@@ -21,4 +21,6 @@ public class ApiProject {
     public static String API_CheckGroup_POST = "http://localhost:4567/group/getaccepted/";
     public static String API_CheckRequest_POST = "http://localhost:4567/group/getlistrequest/";
     public static String API_LoadLogChat_POST="http://localhost:4567/group/get";
+    public static String API_requestchat_POST="http://localhost:4567/group/requestchat";
+          
 }
