@@ -7,6 +7,7 @@ package chatgvn.gui;
 
 import chatgvn.client.ActionGUI;
 import chatgvn.socket.WebsocketClientEndpoint;
+import static chatgvn.utils.ApiProject.API_AccepRequest_POST;
 import static chatgvn.utils.ApiProject.API_CHECK_USERNAME_POST;
 import static chatgvn.utils.ApiProject.API_CheckGroup_POST;
 import static chatgvn.utils.ApiProject.API_CheckOnline_POST;
@@ -16,6 +17,7 @@ import static chatgvn.utils.ApiProject.API_LoadLogChat_POST;
 import static chatgvn.utils.ApiProject.API_requestchat_POST;
 import chatgvn.utils.HandleApi;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +33,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -60,6 +63,7 @@ public class GUIChat {
     public static JLabel _EmailInfo = new JLabel();
     public static JLabel _PhoneInfo = new JLabel();
     public static JButton _jbsetinfo = new JButton();
+    public static JScrollPane _ListOnlineScrollChatWindow;
     Logger log = Logger.getLogger(ActionGUI.class.getName());
     //list online
     public static JList _ListOnline;
@@ -85,15 +89,15 @@ public class GUIChat {
     private JSONArray _JsonGroupNow;
     private JSONArray _JsonRequetsNow;
     public static JButton _Accept = new JButton();
-    
-    
-     //JSONArray kq
-    
+
+    //JSONArray kq
     //
     public static WebsocketClientEndpoint a;
     public boolean readysendmes = false;
     public static JSONObject JSONObjectGroupNow = new JSONObject();
     public static JSONObject JSONObjectRequetsNow = new JSONObject();
+
+    public static String stringcchat;
 
     public GUIChat(JSONObject info, String idlogin) {
         this._InfoTokenLogin = info;
@@ -143,7 +147,9 @@ public class GUIChat {
         _Chatmsg.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                SendChat();
+                        SendChat();
+                  
+
                 }
             }
         });
@@ -164,7 +170,7 @@ public class GUIChat {
                 JSONArray _AraygroupCreator = new JSONArray();
                 try {
 
-                    jsonObject.put("groupName", _ToName.getText() +" && "+ JsonCheckUser.getString("userName"));
+                    jsonObject.put("groupName", _ToName.getText() + " && " + JsonCheckUser.getString("userName"));
                     jsonObject.put("groupType", "0");
                     //member in group
                     JSONObject jsonObject1 = new JSONObject();
@@ -229,9 +235,9 @@ public class GUIChat {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
 
                 try {
-                  
+
                     JSONObjectGroupNow = _JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex());
-                   
+
                     System.out.println("Check LogChat-------------------------");
                     Loadlogchat(_JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex()).get("_id").toString());
                 } catch (JSONException ex) {
@@ -247,11 +253,11 @@ public class GUIChat {
         //bat su kien cho danh sach moi` ket ban
         _ListOnlinekb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                try { 
+                try {
                     JSONObjectRequetsNow = _JsonRequetsNow.getJSONObject(_ListOnlinekb.getSelectedIndex());
-                    
+
                     System.out.println(JSONObjectRequetsNow);
-                    
+
                 } catch (JSONException ex) {
                     System.out.println("loi o _ListOnlinekb.addMouseListener");
                 }
@@ -276,38 +282,56 @@ public class GUIChat {
                 _ListOnlineScrollPanekb.setVisible(false);
             }
         });
-        
+
         _Accept.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            
+                HandleApi handle = new HandleApi();
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("id", JSONObjectRequetsNow.get("_id").toString());
+                    jsonObject.put("loginId", _LoginId);
+                    jsonObject.put("auth_token", _InfoTokenLogin.get("token"));
+                    System.out.println("PRAMMETTERRRRRR");
+                    System.out.println(jsonObject);
+                    String StrJsonCheckUser = handle.postApi(API_AccepRequest_POST, jsonObject.toString());
+                    System.out.println(StrJsonCheckUser);
+                    CheckRequest();
+                } catch (JSONException ex) {
+                    System.out.println("EERORR In _Accept.addActionListener");
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(GUIChat.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
         });
 
     }
-    private void SendChat(){
-         if (readysendmes == true) {
 
-                        //    a.sendMessage(_Chatmsg.getText());
-                        try {
-                            JSONObject jsonObjectPar = new JSONObject();
-                            jsonObjectPar.put("api", "send message");
-                            jsonObjectPar.put("group_id", JSONObjectGroupNow.get("_id").toString());
-                            jsonObjectPar.put("token_sender", _InfoTokenLogin.get("token").toString());
-                            jsonObjectPar.put("sender", _LoginId);
-                            jsonObjectPar.put("message", _Chatmsg.getText());
-                            jsonObjectPar.put("user_name", JsonCheckUser.getString("userName"));
-                            // System.out.println("PARAMMEST:");
-                            System.out.println(jsonObjectPar);
-                            a.sendMessage(jsonObjectPar.toString());
-                            //  _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
-                            _Chatmsg.setText("");
+    private void SendChat() {
+        if (readysendmes == true) {
 
-                        } catch (JSONException ex) {
+            //    a.sendMessage(_Chatmsg.getText());
+            try {
+                JSONObject jsonObjectPar = new JSONObject();
+                jsonObjectPar.put("api", "send message");
+                jsonObjectPar.put("group_id", JSONObjectGroupNow.get("_id").toString());
+                jsonObjectPar.put("token_sender", _InfoTokenLogin.get("token").toString());
+                jsonObjectPar.put("sender", _LoginId);
+                jsonObjectPar.put("message", _Chatmsg.getText());
+                jsonObjectPar.put("user_name", JsonCheckUser.getString("userName"));
+                System.out.println("PARAMMEST CHAT:");
+                System.out.println(jsonObjectPar);
+                a.sendMessage(jsonObjectPar.toString());
+                //  _ChatWindow.setText(_ChatWindow.getText() + "\n" + _Chatmsg.getText());
+                _Chatmsg.setText("");
 
-                        }
+            } catch (JSONException ex) {
+                System.out.println("SendChat lỗi");
+            }
+        }
     }
-    }
+
     //load log chat
     private void Loadlogchat(String idgroup) throws JSONException, IOException {
 //            System.out.println("Par:");
@@ -396,6 +420,8 @@ public class GUIChat {
     private void handeMessWebsocket(String mes) {
 
         try {
+            System.out.println("TỪ Sever:");
+            System.out.println(mes);
             JSONObject jsonObject = new JSONObject(mes);
             if (jsonObject.get("api").equals("indentification") && jsonObject.get("message").equals("success")) {
                 System.out.println(mes);
@@ -403,7 +429,16 @@ public class GUIChat {
                 readysendmes = true;
             } else {
                 if (jsonObject.get("group_id").toString().equals(JSONObjectGroupNow.get("_id").toString())) {
-                    _ChatWindow.setText(_ChatWindow.getText() + "\n" + jsonObject.get("sender").toString() + ": " + jsonObject.get("message").toString());
+                    String conten = jsonObject.get("sender").toString() + ": " + jsonObject.get("message").toString();
+                    stringcchat = conten;
+                    _ChatWindow.setText(_ChatWindow.getText() + "\n" + conten);
+                    //
+                    JViewport vp = _ListOnlineScrollChatWindow.getViewport();
+                    Point p = vp.getViewPosition();
+                    p.y += _ChatWindow.getPreferredSize().height;
+                    _ListOnlineScrollChatWindow.revalidate();
+                    vp.setViewPosition(p);
+
                 }
 
             }
@@ -488,8 +523,8 @@ public class GUIChat {
             System.out.println("=====");
             _JlistModel.clear();
             for (int i = 0; i < _JsonGroupNow.length(); i++) {
-               // _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("_id"));
-                  _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("groupName"));
+                // _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("_id"));
+                _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("groupName"));
             }
 
         } catch (JSONException ex) {
@@ -536,7 +571,8 @@ public class GUIChat {
         _ChatWindow.setEditable(false);
         _ChatWindow.setColumns(20);
         _ChatWindow.setRows(5);
-        JScrollPane _ListOnlineScrollChatWindow = new JScrollPane(_ChatWindow);
+        _ListOnlineScrollChatWindow = new JScrollPane(_ChatWindow);
+        _ListOnlineScrollChatWindow.setViewportView(_ChatWindow);
         _MainWindow.getContentPane().add(_ListOnlineScrollChatWindow);
         _ListOnlineScrollChatWindow.setBounds(270, 200, 700, 480);
 
@@ -613,12 +649,10 @@ public class GUIChat {
         _TrangThaiAcep.setForeground(Color.yellow);
         _MainWindow.getContentPane().add(_TrangThaiAcep);
         _TrangThaiAcep.setBounds(750, 150, 300, 20);
-        
-        
-        
-         _Accept.setText("Accept");
+
+        _Accept.setText("Accept");
         _MainWindow.getContentPane().add(_Accept);
-         _Accept.setBounds(210, 170, 90, 25);
+        _Accept.setBounds(210, 170, 90, 25);
 
     }
 
