@@ -23,6 +23,6 @@ public class ApiProject {
     public static String API_LoadLogChat_POST = "http://localhost:4567/group/get";
     public static String API_requestchat_POST = "http://localhost:4567/group/requestchat";
     public static String API_AccepRequest_POST = "http://localhost:4567/group/acceptrequest";
-
-    //http://localhost:4567/group/acceptrequest
+    public static String API_AddGroup_POST = "http://localhost:4567/group/addtogroup";
+    //http://localhost:4567/group/addtogroup
 }

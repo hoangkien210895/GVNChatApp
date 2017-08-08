@@ -91,6 +91,9 @@ public class GUIChat {
     public static JButton _Accept = new JButton();
 
     //JSONArray kq
+    public static JButton _jbCreateGroup = new JButton();
+    public static JButton _jbInsertGroup = new JButton();
+
     //
     public static WebsocketClientEndpoint a;
     public boolean readysendmes = false;
@@ -115,7 +118,7 @@ public class GUIChat {
         _MainWindow.setLocationRelativeTo(null);
 
         try {
-            a = new WebsocketClientEndpoint(new URI("ws://10.64.1.88:1234/chat"));
+            a = new WebsocketClientEndpoint(new URI("ws://10.64.100.23:1234/chat"));
 
             a.addMessageHandler(new WebsocketClientEndpoint.MessageHandler() {
                 public void handleMessage(String message) {
@@ -147,8 +150,7 @@ public class GUIChat {
         _Chatmsg.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                        SendChat();
-                  
+                    SendChat();
 
                 }
             }
@@ -235,8 +237,10 @@ public class GUIChat {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
 
                 try {
-
+                    System.out.println("FUJKKKKKKKKK-------------------------");
                     JSONObjectGroupNow = _JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex());
+                    System.out.println(JSONObjectGroupNow);
+                    System.out.println("FUJKKKKKKKKK-------------------------");
 
                     System.out.println("Check LogChat-------------------------");
                     Loadlogchat(_JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex()).get("_id").toString());
@@ -250,6 +254,28 @@ public class GUIChat {
             }
 
         });
+        ///
+        _jbInsertGroup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+
+                _jbInsertGroup.setEnabled(false);
+                System.out.println("FUCKINGGGGG-------------------------");
+                try {
+                    System.out.println(JSONObjectGroupNow.getString("_id"));
+                    System.out.println(JSONObjectGroupNow.getString("groupType"));
+                    System.out.println("FUCKINGGGGG-------------------------");
+                    GUIInsertGroup guiInsertGroup = new GUIInsertGroup(_jbInsertGroup, JSONObjectGroupNow, _InfoTokenLogin);
+                    guiInsertGroup.buildWindowLogin();
+                    
+                } catch (JSONException ex) {
+                    System.out.println("loi ne baby");
+                    _jbInsertGroup.setEnabled(true);
+                }
+
+            }
+        });
+
         //bat su kien cho danh sach moi` ket ban
         _ListOnlinekb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -303,6 +329,15 @@ public class GUIChat {
                     java.util.logging.Logger.getLogger(GUIChat.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
+            }
+        });
+
+        _jbCreateGroup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                _jbCreateGroup.setEnabled(false);
+                GUICreateGroup guiCreateGroup = new GUICreateGroup(_jbCreateGroup, JsonCheckUser, _InfoTokenLogin);
+                guiCreateGroup.buildWindowLogin();
             }
         });
 
@@ -628,7 +663,17 @@ public class GUIChat {
 
         _jbAndFriend.setText("Add Friend");
         _MainWindow.getContentPane().add(_jbAndFriend);
-        _jbAndFriend.setBounds(810, 40, 150, 25);
+        _jbAndFriend.setBounds(810, 170, 150, 25);
+
+        //_jbCreateGroup
+        _jbCreateGroup.setText("Create Group");
+        _MainWindow.getContentPane().add(_jbCreateGroup);
+        _jbCreateGroup.setBounds(500, 170, 150, 25);
+
+        //_jbInsertGroup
+        _jbInsertGroup.setText("Insert Group");
+        _MainWindow.getContentPane().add(_jbInsertGroup);
+        _jbInsertGroup.setBounds(660, 170, 120, 25);
 
         _NhapTenAddFriend.setText("Name:");
         _NhapTenAddFriend.setForeground(Color.yellow);
