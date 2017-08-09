@@ -40,8 +40,8 @@ public class GUICreateGroup {
     public JLabel _JLabelAddName = new JLabel();
     public JLabel _JLabelAddID = new JLabel();
 
-    public JLabel status = new JLabel();
-    public JLabel status2 = new JLabel();
+    public static JLabel status = new JLabel();
+    public static JLabel status2 = new JLabel();
 
     public JButton _jbCreateGroupxxx;
     private JSONArray ArrayListInvite = new JSONArray();
