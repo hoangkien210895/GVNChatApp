@@ -5,6 +5,7 @@
  */
 package chatgvn.gui;
 
+import static chatgvn.utils.ApiProject.API_AddGroup_POST;
 import chatgvn.utils.HandleApi;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,7 @@ public class GUIInsertGroup {
     public JTextField _AddName = new JTextField();
     public JTextField _AddID = new JTextField();
 
-    public JButton _JBAddListInvite = new JButton();
+    public static JButton _JBAddListInvite = new JButton();
     public JButton _JBCreateGroup = new JButton();
 
     public JLabel _JLNameGroup = new JLabel();
@@ -40,19 +41,37 @@ public class GUIInsertGroup {
 
     public JLabel status = new JLabel();
     public JLabel status2 = new JLabel();
-    public JButton _jbCreateGroupxxx;
-    JSONObject xxxJSONObjectGroupNow;
-    JSONObject xxxtokenlogin;
+    public static JButton _jbCreateGroupxxx;
+    public static JSONObject xxxJSONObjectGroupNow;
+    public static JSONObject xxxtokenlogin;
 
     public GUIInsertGroup(JButton _par, JSONObject b, JSONObject c) {
         this._jbCreateGroupxxx = _par;
         this.xxxJSONObjectGroupNow = b;
         this.xxxtokenlogin = c;
+        System.out.println("=============KKKKKKKKKKKKKKKKKKKKKKKKKKKKK==============");
+        try {
+            System.out.println(xxxtokenlogin.get("token"));
+            System.out.println(xxxJSONObjectGroupNow.getString("_id"));
+            System.out.println(xxxJSONObjectGroupNow.getString("groupType"));
+            _AddID.setText("");
+            _AddName.setText("");
+
+        } catch (JSONException ex) {
+            System.out.println("LOI o GUIInsertGroup");
+        }
+
+        System.out.println("=============KKKKKKKKKKKKKKKKKKKKKKKKKKKKK==============");
+
     }
 
     public void buildWindowLogin() {
         handlingclose();
-        _MainWindow.setTitle("InsertGroupxxx");
+        try {
+            _MainWindow.setTitle("InsertGroupxx ->>>> " + xxxJSONObjectGroupNow.getString("groupName"));
+        } catch (JSONException ex) {
+            System.out.println("set tieu de loi ");
+        }
         _MainWindow.setSize(370, 300);
         _MainWindow.setResizable(false);
         _MainWindow.setLocationRelativeTo(null);
@@ -64,27 +83,46 @@ public class GUIInsertGroup {
 
     private void press() {
         _JBAddListInvite.addActionListener(new ActionListener() {
-             HandleApi handle = new HandleApi();
+            HandleApi handle = new HandleApi();
+
             @Override
             public void actionPerformed(ActionEvent ae) {
 
                 try {
-                    System.out.println("PAR==========");
-                    System.out.println(xxxtokenlogin.get("token"));
-                    System.out.println(xxxJSONObjectGroupNow.getString("_id"));
-                    System.out.println(xxxJSONObjectGroupNow.getString("groupType"));
-                                     
-//                     JSONObject Input = new JSONObject();
-//                     Input.put("auth_token", xxxtokenlogin.get("token").toString());
-//                     Input.put("userid",_AddID.getText());
-//                     Input.put("username",_AddName.getText());
-//                     Input.put("id",xxxJSONObjectGroupNow.getString("_id"));
-//                     System.out.println("PAR==========");
-//                     System.out.println(Input);
-                     
-                     
+                    //                   System.out.println("============================PAR==========");
+//                    System.out.println(xxxtokenlogin.get("token"));
+//                    System.out.println(xxxJSONObjectGroupNow.getString("_id"));                   
+//                    System.out.println(xxxJSONObjectGroupNow.getString("groupType"));
+//                    System.out.println(_AddID.getText());
+//                    System.out.println(_AddName.getText());
+                    //                  System.out.println("======================PAR==========");
+                    if (_AddName.getText().equals("") || _AddID.getText().equals("")) {
+                        throw new Exception("input error kien!!!!");
+                    }
+                    JSONObject Input = new JSONObject();
+                    Input.put("auth_token", xxxtokenlogin.get("token").toString());
+                    Input.put("userid", _AddID.getText());
+                    Input.put("username", _AddName.getText());
+                    Input.put("id", xxxJSONObjectGroupNow.getString("_id"));
+                    System.out.println("============================PAR==========");
+                    System.out.println(Input);
+                    System.out.println("======================PAR==========");
+                    
+                    HandleApi handle = new HandleApi();
+                    String StrOutPutApi = handle.postApi(API_AddGroup_POST, Input.toString());
+                    System.out.println("======aaaaaa=======================");
+                    System.out.println(StrOutPutApi);
+                    JSONObject kq = new JSONObject(StrOutPutApi);
+                    if(kq.getString("message").equals("Add success")){
+                          status.setText("Thành Công rồi đới !!!!!!!!");
+                          _AddID.setText("");
+                          _AddName.setText("");
+                    }
+                    System.out.println("========aaaaaa===============================");
                 } catch (JSONException ex) {
                     status.setText("LOI ROI MAY OI");
+                } catch (Exception ex) {
+                    status.setText("LOI ROI MAY OI Nhap thong tin de");
                 }
 
             }
@@ -93,10 +131,10 @@ public class GUIInsertGroup {
     }
 
     private void handlingclose() {
-       //   _MainWindow.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        // _MainWindow.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         _MainWindow.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
-
+                _MainWindow.dispose();
             }
 
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -112,8 +150,8 @@ public class GUIInsertGroup {
         _MainWindow.getContentPane().setLayout(null);
         _MainWindow.getContentPane().setBackground(new java.awt.Color(148, 170, 214));
 
-        //nhap ten tung thang
-        _JLGioiThieu.setText("Nhap ten && loginID nguoi muon them:");
+        _JLGioiThieu.setText("Nhap ten && loginID them vao:");
+
         _JLGioiThieu.setForeground(Color.yellow);
         _MainWindow.getContentPane().add(_JLGioiThieu);
         _JLGioiThieu.setBounds(50, 40, 300, 20);

@@ -99,7 +99,7 @@ public class GUIChat {
     public boolean readysendmes = false;
     public static JSONObject JSONObjectGroupNow = new JSONObject();
     public static JSONObject JSONObjectRequetsNow = new JSONObject();
-
+    public static   GUIInsertGroup guiInsertGroup;
     public static String stringcchat;
 
     public GUIChat(JSONObject info, String idlogin) {
@@ -165,56 +165,58 @@ public class GUIChat {
         _jbAndFriend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                System.out.println("Add Friend user---------");
-                HandleApi handle = new HandleApi();
-                JSONObject jsonObject = new JSONObject();
-                JSONArray _ArayGroupMember = new JSONArray();
-                JSONArray _AraygroupCreator = new JSONArray();
-                try {
-
-                    jsonObject.put("groupName", _ToName.getText() + " && " + JsonCheckUser.getString("userName"));
-                    jsonObject.put("groupType", "0");
-                    //member in group
-                    JSONObject jsonObject1 = new JSONObject();
-                    jsonObject1.put("name", JsonCheckUser.getString("userName"));
-                    jsonObject1.put("id", JsonCheckUser.getString("loginId"));
-                    jsonObject1.put("status", "true");
-                    _ArayGroupMember.put(jsonObject1);
-                    JSONObject jsonObject2 = new JSONObject();
-                    jsonObject2.put("name", _ToName.getText());
-                    jsonObject2.put("id", _ToLoginID.getText());
-                    jsonObject2.put("status", "true");
-                    _ArayGroupMember.put(jsonObject2);
-                    jsonObject.put("groupMember", _ArayGroupMember);
-
-                    ///
-                    _AraygroupCreator.put(jsonObject1);
-                    jsonObject.put("groupCreator", _AraygroupCreator);
-                    //token
-                    jsonObject.put("auth_token", _InfoTokenLogin.get("token").toString());
-
-                    System.out.println("ĐÂY là PARAM:");
-                    System.out.println(jsonObject.toString());
-                    System.out.println("=========MMMMKKKK============:");
-
-                    String StrJsonAddFriend = handle.postApi(API_requestchat_POST, jsonObject.toString());
-                    System.out.println("=========MMMMKKKK222222222============:");
-                    System.out.println(StrJsonAddFriend);
-
-                    JSONObject kq = new JSONObject(StrJsonAddFriend);
-                    if (kq.getString("message").equals("Request success")) {
-                        _ToName.setText("");
-                        _ToLoginID.setText("");
-                        _TrangThaiAcep.setText("Giửi lời mời thành công!!!");
-
-                    }
-
-                } catch (JSONException ex) {
-                    System.out.println("kamezogogo");
-                } catch (IOException ex) {
-                    System.out.println("kamezogogo2222222222");
-                }
-                System.out.println("END Add Friend user---------------");
+                GUIaddFriend newgui = new GUIaddFriend();
+                newgui.buildWindowLogin();
+//                System.out.println("Add Friend user---------");
+//                HandleApi handle = new HandleApi();
+//                JSONObject jsonObject = new JSONObject();
+//                JSONArray _ArayGroupMember = new JSONArray();
+//                JSONArray _AraygroupCreator = new JSONArray();
+//                try {
+//
+//                    jsonObject.put("groupName", _ToName.getText() + " && " + JsonCheckUser.getString("userName"));
+//                    jsonObject.put("groupType", "0");
+//                    //member in group
+//                    JSONObject jsonObject1 = new JSONObject();
+//                    jsonObject1.put("name", JsonCheckUser.getString("userName"));
+//                    jsonObject1.put("id", JsonCheckUser.getString("loginId"));
+//                    jsonObject1.put("status", "true");
+//                    _ArayGroupMember.put(jsonObject1);
+//                    JSONObject jsonObject2 = new JSONObject();
+//                    jsonObject2.put("name", _ToName.getText());
+//                    jsonObject2.put("id", _ToLoginID.getText());
+//                    jsonObject2.put("status", "true");
+//                    _ArayGroupMember.put(jsonObject2);
+//                    jsonObject.put("groupMember", _ArayGroupMember);
+//
+//                    ///
+//                    _AraygroupCreator.put(jsonObject1);
+//                    jsonObject.put("groupCreator", _AraygroupCreator);
+//                    //token
+//                    jsonObject.put("auth_token", _InfoTokenLogin.get("token").toString());
+//
+//                    System.out.println("ĐÂY là PARAM:");
+//                    System.out.println(jsonObject.toString());
+//                    System.out.println("=========MMMMKKKK============:");
+//
+//                    String StrJsonAddFriend = handle.postApi(API_requestchat_POST, jsonObject.toString());
+//                    System.out.println("=========MMMMKKKK222222222============:");
+//                    System.out.println(StrJsonAddFriend);
+//
+//                    JSONObject kq = new JSONObject(StrJsonAddFriend);
+//                    if (kq.getString("message").equals("Request success")) {
+//                        _ToName.setText("");
+//                        _ToLoginID.setText("");
+//                        _TrangThaiAcep.setText("Giửi lời mời thành công!!!");
+//
+//                    }
+//
+//                } catch (JSONException ex) {
+//                    System.out.println("kamezogogo");
+//                } catch (IOException ex) {
+//                    System.out.println("kamezogogo2222222222");
+//                }
+//                System.out.println("END Add Friend user---------------");
             }
         });
 
@@ -265,12 +267,21 @@ public class GUIChat {
                     System.out.println(JSONObjectGroupNow.getString("_id"));
                     System.out.println(JSONObjectGroupNow.getString("groupType"));
                     System.out.println("FUCKINGGGGG-------------------------");
-                    GUIInsertGroup guiInsertGroup = new GUIInsertGroup(_jbInsertGroup, JSONObjectGroupNow, _InfoTokenLogin);
+                    if (JSONObjectGroupNow.getString("groupType").equals("0")) {
+                        throw new Exception("input error kien!!!!");
+                    }
+                    guiInsertGroup = null;
+                    guiInsertGroup = new GUIInsertGroup(_jbInsertGroup, JSONObjectGroupNow, _InfoTokenLogin);
                     guiInsertGroup.buildWindowLogin();
                     
                 } catch (JSONException ex) {
                     System.out.println("loi ne baby");
                     _jbInsertGroup.setEnabled(true);
+                    _MainWindow.setEnabled(true);
+                } catch (Exception ex) {
+                    System.out.println("loi ne baby");
+                    _jbInsertGroup.setEnabled(true);
+                    _MainWindow.setEnabled(true);
                 }
 
             }
@@ -652,7 +663,7 @@ public class GUIChat {
         /////
 
         /////_jbDanhSach
-        _jbDanhSach.setText("Friend");
+        _jbDanhSach.setText("Room");
         _MainWindow.getContentPane().add(_jbDanhSach);
         _jbDanhSach.setBounds(10, 170, 90, 25);
 
