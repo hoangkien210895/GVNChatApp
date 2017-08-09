@@ -13,6 +13,7 @@ import static chatgvn.utils.ApiProject.API_CheckGroup_POST;
 import static chatgvn.utils.ApiProject.API_CheckOnline_POST;
 import static chatgvn.utils.ApiProject.API_CheckRequest_POST;
 import static chatgvn.utils.ApiProject.API_LOGOUT_POST;
+import static chatgvn.utils.ApiProject.API_LeftGroup_POST;
 import static chatgvn.utils.ApiProject.API_LoadLogChat_POST;
 import static chatgvn.utils.ApiProject.API_requestchat_POST;
 import chatgvn.utils.HandleApi;
@@ -88,7 +89,8 @@ public class GUIChat {
     public JLabel _TrangThaiAcep = new JLabel();
     private JSONArray _JsonGroupNow;
     private JSONArray _JsonRequetsNow;
-    public static JButton _Accept = new JButton();
+    public static JButton _AcceptInvite = new JButton();
+    public static JButton _DeleteGroup = new JButton();
 
     //JSONArray kq
     public static JButton _jbCreateGroup = new JButton();
@@ -99,8 +101,9 @@ public class GUIChat {
     public boolean readysendmes = false;
     public static JSONObject JSONObjectGroupNow = new JSONObject();
     public static JSONObject JSONObjectRequetsNow = new JSONObject();
-    public static   GUIInsertGroup guiInsertGroup;
+    public static GUIInsertGroup guiInsertGroup;
     public static String stringcchat;
+    //
 
     public GUIChat(JSONObject info, String idlogin) {
         this._InfoTokenLogin = info;
@@ -111,6 +114,7 @@ public class GUIChat {
     public void buildWindowLogin() {
         _JlistModel = new DefaultListModel();
         _JlistModelkb = new DefaultListModel();
+        HandingCheckUser();
         handlingclose();
         _MainWindow.setTitle("ChatGvn");
         _MainWindow.setSize(1000, 800);
@@ -137,7 +141,7 @@ public class GUIChat {
         } catch (URISyntaxException ex) {
             System.out.println("websocket loi r ");
         }
-        HandingCheckUser();
+
         CheckRequest();
         // HandingCheckOnline();
         CheckGroupNow();
@@ -165,61 +169,13 @@ public class GUIChat {
         _jbAndFriend.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                GUIaddFriend newgui = new GUIaddFriend();
+                GUIaddFriend newgui = new GUIaddFriend(_jbAndFriend, JsonCheckUser, _InfoTokenLogin);
                 newgui.buildWindowLogin();
-//                System.out.println("Add Friend user---------");
-//                HandleApi handle = new HandleApi();
-//                JSONObject jsonObject = new JSONObject();
-//                JSONArray _ArayGroupMember = new JSONArray();
-//                JSONArray _AraygroupCreator = new JSONArray();
-//                try {
-//
-//                    jsonObject.put("groupName", _ToName.getText() + " && " + JsonCheckUser.getString("userName"));
-//                    jsonObject.put("groupType", "0");
-//                    //member in group
-//                    JSONObject jsonObject1 = new JSONObject();
-//                    jsonObject1.put("name", JsonCheckUser.getString("userName"));
-//                    jsonObject1.put("id", JsonCheckUser.getString("loginId"));
-//                    jsonObject1.put("status", "true");
-//                    _ArayGroupMember.put(jsonObject1);
-//                    JSONObject jsonObject2 = new JSONObject();
-//                    jsonObject2.put("name", _ToName.getText());
-//                    jsonObject2.put("id", _ToLoginID.getText());
-//                    jsonObject2.put("status", "true");
-//                    _ArayGroupMember.put(jsonObject2);
-//                    jsonObject.put("groupMember", _ArayGroupMember);
-//
-//                    ///
-//                    _AraygroupCreator.put(jsonObject1);
-//                    jsonObject.put("groupCreator", _AraygroupCreator);
-//                    //token
-//                    jsonObject.put("auth_token", _InfoTokenLogin.get("token").toString());
-//
-//                    System.out.println("ĐÂY là PARAM:");
-//                    System.out.println(jsonObject.toString());
-//                    System.out.println("=========MMMMKKKK============:");
-//
-//                    String StrJsonAddFriend = handle.postApi(API_requestchat_POST, jsonObject.toString());
-//                    System.out.println("=========MMMMKKKK222222222============:");
-//                    System.out.println(StrJsonAddFriend);
-//
-//                    JSONObject kq = new JSONObject(StrJsonAddFriend);
-//                    if (kq.getString("message").equals("Request success")) {
-//                        _ToName.setText("");
-//                        _ToLoginID.setText("");
-//                        _TrangThaiAcep.setText("Giửi lời mời thành công!!!");
-//
-//                    }
-//
-//                } catch (JSONException ex) {
-//                    System.out.println("kamezogogo");
-//                } catch (IOException ex) {
-//                    System.out.println("kamezogogo2222222222");
-//                }
-//                System.out.println("END Add Friend user---------------");
+                _jbAndFriend.setEnabled(false);
+
             }
         });
-
+        ///bat hanh dong kick vao button setinfo
         _jbsetinfo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -234,7 +190,7 @@ public class GUIChat {
                 _jbsetinfo.setEnabled(false);
             }
         });
-
+        ////bat hanh dong dung chuot vao List room chat 
         _ListOnline.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
 
@@ -252,11 +208,14 @@ public class GUIChat {
                     System.out.println("loi hihi22222");
                 }
                 System.out.println("Check LogChat End-------------------------");
+                _DeleteGroup.setVisible(true);
+                _AcceptInvite.setVisible(false);
+                
 
             }
 
         });
-        ///
+        ///bat hanh dong kick vao button nsertGroup
         _jbInsertGroup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -273,7 +232,7 @@ public class GUIChat {
                     guiInsertGroup = null;
                     guiInsertGroup = new GUIInsertGroup(_jbInsertGroup, JSONObjectGroupNow, _InfoTokenLogin);
                     guiInsertGroup.buildWindowLogin();
-                    
+
                 } catch (JSONException ex) {
                     System.out.println("loi ne baby");
                     _jbInsertGroup.setEnabled(true);
@@ -286,8 +245,7 @@ public class GUIChat {
 
             }
         });
-
-        //bat su kien cho danh sach moi` ket ban
+        //bat hanh dong dung chuot List danh sach moi` ket ban
         _ListOnlinekb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 try {
@@ -298,6 +256,8 @@ public class GUIChat {
                 } catch (JSONException ex) {
                     System.out.println("loi o _ListOnlinekb.addMouseListener");
                 }
+                _DeleteGroup.setVisible(false);
+                _AcceptInvite.setVisible(true);
 
             }
         });
@@ -310,7 +270,7 @@ public class GUIChat {
                 _ListOnlineScrollPanekb.setVisible(true);
             }
         });
-
+        //bat hanh dong kick vao nut room
         _jbDanhSach.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -320,7 +280,7 @@ public class GUIChat {
             }
         });
 
-        _Accept.addActionListener(new ActionListener() {
+        _AcceptInvite.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 HandleApi handle = new HandleApi();
@@ -335,9 +295,9 @@ public class GUIChat {
                     System.out.println(StrJsonCheckUser);
                     CheckRequest();
                 } catch (JSONException ex) {
-                    System.out.println("EERORR In _Accept.addActionListener");
+                    System.out.println("EERORR In _AcceptInvite.addActionListener");
                 } catch (IOException ex) {
-                    java.util.logging.Logger.getLogger(GUIChat.class.getName()).log(Level.SEVERE, null, ex);
+                     System.out.println("EERORR In _AcceptInvite.addActionListener handAPI");
                 }
 
             }
@@ -349,6 +309,39 @@ public class GUIChat {
                 _jbCreateGroup.setEnabled(false);
                 GUICreateGroup guiCreateGroup = new GUICreateGroup(_jbCreateGroup, JsonCheckUser, _InfoTokenLogin);
                 guiCreateGroup.buildWindowLogin();
+            }
+        });
+
+        _DeleteGroup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                HandleApi handle = new HandleApi();
+                try {
+                    JSONObject input = new JSONObject();
+                    input.put("id", JSONObjectGroupNow.getString("_id"));
+                    input.put("loginId", _LoginId);
+                    input.put("auth_token", _InfoTokenLogin.getString("token"));
+                    System.out.println("GAUUUUUUUUUU GAUUUUUUUU");
+                    System.out.println(input);
+                    System.out.println("GAUUUUUUUUUU GAUUUUUUUU");
+                    String kq = handle.postApi(API_LeftGroup_POST, input.toString());
+                    System.out.println("STRINGGGGGG KQ:");
+                    JSONObject fromApi = new JSONObject(kq);
+                    System.out.println(fromApi);
+                    System.out.println("STRINGGGGGG KQ1111111:");
+                    if (fromApi.getString("message").equals("Left success")) {
+                        System.out.println("day la dai phat thanh tieng noi viet name oke roi dm");
+                        _ChatWindow.setText("");
+                        JSONObjectGroupNow = null;
+                        CheckGroupNow();
+                    }
+
+                } catch (JSONException ex) {
+                    System.out.println("day la dai phat thanh tieng noi viet name loi roi dm");
+                } catch (IOException ex) {
+                    System.out.println("day la dai phat thanh tieng noi viet name loi roi dm handleAPI");
+                }
+
             }
         });
 
@@ -409,6 +402,7 @@ public class GUIChat {
         jsonObjectPar.put("api", "indentification");
         jsonObjectPar.put("token", _InfoTokenLogin.get("token").toString());
         jsonObjectPar.put("user_name", _LoginId);
+        jsonObjectPar.put("name", JsonCheckUser.getString("userName"));
         a.sendMessage(jsonObjectPar.toString());
     }
 
@@ -686,29 +680,35 @@ public class GUIChat {
         _MainWindow.getContentPane().add(_jbInsertGroup);
         _jbInsertGroup.setBounds(660, 170, 120, 25);
 
-        _NhapTenAddFriend.setText("Name:");
-        _NhapTenAddFriend.setForeground(Color.yellow);
-        _MainWindow.getContentPane().add(_NhapTenAddFriend);
-        _NhapTenAddFriend.setBounds(750, 80, 100, 20);
-
-        _MainWindow.getContentPane().add(_ToName);
-        _ToName.setBounds(810, 80, 100, 20);
-
-        _NhapLoginIDAddFriend.setText("LoginID:");
-        _NhapLoginIDAddFriend.setForeground(Color.yellow);
-        _MainWindow.getContentPane().add(_NhapLoginIDAddFriend);
-        _NhapLoginIDAddFriend.setBounds(750, 120, 100, 20);
-
-        _MainWindow.getContentPane().add(_ToLoginID);
-        _ToLoginID.setBounds(810, 120, 100, 20);
-
+//        _NhapTenAddFriend.setText("Name:");
+//        _NhapTenAddFriend.setForeground(Color.yellow);
+//        _MainWindow.getContentPane().add(_NhapTenAddFriend);
+//        _NhapTenAddFriend.setBounds(750, 80, 100, 20);
+//
+//        _MainWindow.getContentPane().add(_ToName);
+//        _ToName.setBounds(810, 80, 100, 20);
+//
+//        _NhapLoginIDAddFriend.setText("LoginID:");
+//        _NhapLoginIDAddFriend.setForeground(Color.yellow);
+//        _MainWindow.getContentPane().add(_NhapLoginIDAddFriend);
+//        _NhapLoginIDAddFriend.setBounds(750, 120, 100, 20);
+//
+//        _MainWindow.getContentPane().add(_ToLoginID);
+//        _ToLoginID.setBounds(810, 120, 100, 20);
         _TrangThaiAcep.setForeground(Color.yellow);
         _MainWindow.getContentPane().add(_TrangThaiAcep);
         _TrangThaiAcep.setBounds(750, 150, 300, 20);
 
-        _Accept.setText("Accept");
-        _MainWindow.getContentPane().add(_Accept);
-        _Accept.setBounds(210, 170, 90, 25);
+        _AcceptInvite.setText("Accept");
+        _MainWindow.getContentPane().add(_AcceptInvite);
+        _AcceptInvite.setBounds(210, 170, 90, 25);
+        _AcceptInvite.setVisible(false);
+//        
+        _DeleteGroup.setText("Delete");
+        _MainWindow.getContentPane().add(_DeleteGroup);
+        //310, 170, 90, 25
+        _DeleteGroup.setBounds(210, 170, 90, 25);
+        _DeleteGroup.setVisible(false);
 
     }
 
