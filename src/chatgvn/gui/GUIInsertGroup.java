@@ -39,7 +39,7 @@ public class GUIInsertGroup {
     public JLabel _JLabelAddName = new JLabel();
     public JLabel _JLabelAddID = new JLabel();
 
-    public JLabel status = new JLabel();
+    public static JLabel status = new JLabel();
     public JLabel status2 = new JLabel();
     public static JButton _jbCreateGroupxxx;
     public static JSONObject xxxJSONObjectGroupNow;

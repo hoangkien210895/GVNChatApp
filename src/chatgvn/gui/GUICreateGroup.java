@@ -135,6 +135,7 @@ public class GUICreateGroup {
                     JSONObject kq = new JSONObject(StrJsonGroup);
                     if(kq.getString("message").equals("Request success")){
                           status2.setText("Thành Công rồi đới !!!!!!!!");
+                          GUIChat.CheckGroupNow();
                     }
                     System.out.println("========aaaaaa===============================");
 

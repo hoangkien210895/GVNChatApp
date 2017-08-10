@@ -132,6 +132,7 @@ public class GUIaddFriend {
                         _AddName.setText("");
                         _AddID.setText("");
                         status.setText("Giửi lời mời thành công!!!");
+                        GUIChat.CheckGroupNow();
 
                     }
                 } catch (JSONException ex) {

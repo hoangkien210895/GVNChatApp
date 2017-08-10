@@ -87,8 +87,8 @@ public class GUIChat {
     public JTextField _ToLoginID = new JTextField();
 
     public JLabel _TrangThaiAcep = new JLabel();
-    private JSONArray _JsonGroupNow;
-    private JSONArray _JsonRequetsNow;
+    public static JSONArray _JsonGroupNow;
+    public static JSONArray _JsonRequetsNow;
     public static JButton _AcceptInvite = new JButton();
     public static JButton _DeleteGroup = new JButton();
 
@@ -210,7 +210,6 @@ public class GUIChat {
                 System.out.println("Check LogChat End-------------------------");
                 _DeleteGroup.setVisible(true);
                 _AcceptInvite.setVisible(false);
-                
 
             }
 
@@ -297,7 +296,7 @@ public class GUIChat {
                 } catch (JSONException ex) {
                     System.out.println("EERORR In _AcceptInvite.addActionListener");
                 } catch (IOException ex) {
-                     System.out.println("EERORR In _AcceptInvite.addActionListener handAPI");
+                    System.out.println("EERORR In _AcceptInvite.addActionListener handAPI");
                 }
 
             }
@@ -332,7 +331,7 @@ public class GUIChat {
                     if (fromApi.getString("message").equals("Left success")) {
                         System.out.println("day la dai phat thanh tieng noi viet name oke roi dm");
                         _ChatWindow.setText("");
-                        JSONObjectGroupNow = null;
+                       // JSONObjectGroupNow = null;
                         CheckGroupNow();
                     }
 
@@ -464,10 +463,12 @@ public class GUIChat {
             System.out.println(mes);
             JSONObject jsonObject = new JSONObject(mes);
             if (jsonObject.get("api").equals("indentification") && jsonObject.get("message").equals("success")) {
-                System.out.println(mes);
                 System.out.println("ban da san sàng de giửi tin");
                 readysendmes = true;
             } else {
+                if(jsonObject.get("api").equals("send message")){
+                
+                
                 if (jsonObject.get("group_id").toString().equals(JSONObjectGroupNow.get("_id").toString())) {
                     String conten = jsonObject.get("sender").toString() + ": " + jsonObject.get("message").toString();
                     stringcchat = conten;
@@ -480,6 +481,9 @@ public class GUIChat {
                     vp.setViewPosition(p);
 
                 }
+                
+                }
+                
 
             }
         } catch (JSONException ex) {
@@ -545,7 +549,7 @@ public class GUIChat {
         System.out.println("check Request---------");
     }
 
-    private void CheckGroupNow() {
+    public static void CheckGroupNow() {
 
         System.out.println("check Group---------");
         HandleApi handle = new HandleApi();
@@ -586,7 +590,7 @@ public class GUIChat {
         //set list 54	117	23 // 16	54	103
         _ListOnline = new JList(_JlistModel);
         _ListOnline.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        _ListOnline.setSelectedIndex(0);
+       // _ListOnline.setSelectedIndex(0);
         _ListOnline.setForeground(new java.awt.Color(54, 117, 23));
         _ListOnline.setSelectionForeground(new java.awt.Color(16, 54, 103));
         //set list on ScrollPane
@@ -597,7 +601,7 @@ public class GUIChat {
         ////create 1 list kb
         _ListOnlinekb = new JList(_JlistModelkb);
         _ListOnlinekb.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        _ListOnlinekb.setSelectedIndex(0);
+       // _ListOnlinekb.setSelectedIndex(0);
         _ListOnlinekb.setForeground(new java.awt.Color(54, 117, 23));
         _ListOnlinekb.setSelectionForeground(new java.awt.Color(16, 54, 103));
         //set list on ScrollPane
@@ -666,7 +670,7 @@ public class GUIChat {
         _MainWindow.getContentPane().add(_jbAcepFriend);
         _jbAcepFriend.setBounds(110, 170, 90, 25);
 
-        _jbAndFriend.setText("Add Friend");
+        _jbAndFriend.setText("Chat Friend");
         _MainWindow.getContentPane().add(_jbAndFriend);
         _jbAndFriend.setBounds(810, 170, 150, 25);
 
@@ -680,21 +684,6 @@ public class GUIChat {
         _MainWindow.getContentPane().add(_jbInsertGroup);
         _jbInsertGroup.setBounds(660, 170, 120, 25);
 
-//        _NhapTenAddFriend.setText("Name:");
-//        _NhapTenAddFriend.setForeground(Color.yellow);
-//        _MainWindow.getContentPane().add(_NhapTenAddFriend);
-//        _NhapTenAddFriend.setBounds(750, 80, 100, 20);
-//
-//        _MainWindow.getContentPane().add(_ToName);
-//        _ToName.setBounds(810, 80, 100, 20);
-//
-//        _NhapLoginIDAddFriend.setText("LoginID:");
-//        _NhapLoginIDAddFriend.setForeground(Color.yellow);
-//        _MainWindow.getContentPane().add(_NhapLoginIDAddFriend);
-//        _NhapLoginIDAddFriend.setBounds(750, 120, 100, 20);
-//
-//        _MainWindow.getContentPane().add(_ToLoginID);
-//        _ToLoginID.setBounds(810, 120, 100, 20);
         _TrangThaiAcep.setForeground(Color.yellow);
         _MainWindow.getContentPane().add(_TrangThaiAcep);
         _TrangThaiAcep.setBounds(750, 150, 300, 20);
@@ -703,13 +692,14 @@ public class GUIChat {
         _MainWindow.getContentPane().add(_AcceptInvite);
         _AcceptInvite.setBounds(210, 170, 90, 25);
         _AcceptInvite.setVisible(false);
-//        
+
         _DeleteGroup.setText("Delete");
         _MainWindow.getContentPane().add(_DeleteGroup);
         //310, 170, 90, 25
         _DeleteGroup.setBounds(210, 170, 90, 25);
         _DeleteGroup.setVisible(false);
 
+        ///
     }
 
 }
