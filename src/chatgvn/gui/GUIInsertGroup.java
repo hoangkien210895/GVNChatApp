@@ -107,22 +107,31 @@ public class GUIInsertGroup {
                     System.out.println("============================PAR==========");
                     System.out.println(Input);
                     System.out.println("======================PAR==========");
-                    
+
                     HandleApi handle = new HandleApi();
                     String StrOutPutApi = handle.postApi(API_AddGroup_POST, Input.toString());
                     System.out.println("======aaaaaa=======================");
                     System.out.println(StrOutPutApi);
                     JSONObject kq = new JSONObject(StrOutPutApi);
-                    if(kq.getString("message").equals("Add success")){
-                          status.setText("Thành Công rồi đới !!!!!!!!");
-                          _AddID.setText("");
-                          _AddName.setText("");
+                    if (kq.getString("message").equals("Add success")) {
+                        status.setText("Thành Công rồi đới !!!!!!!!");
+                        _AddID.setText("");
+                        _AddName.setText("");
+                    } else if (kq.getString("message").equals("User has exited")) {
+
+                        status.setText("Đã có trong group !!!!!!!!");
+                        _AddID.setText("");
+                        _AddName.setText("");
                     }
                     System.out.println("========aaaaaa===============================");
                 } catch (JSONException ex) {
                     status.setText("LOI ROI MAY OI");
+                    _AddID.setText("");
+                    _AddName.setText("");
                 } catch (Exception ex) {
                     status.setText("LOI ROI MAY OI Nhap thong tin de");
+                    _AddID.setText("");
+                    _AddName.setText("");
                 }
 
             }

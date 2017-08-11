@@ -18,6 +18,7 @@ import static chatgvn.utils.ApiProject.API_LoadLogChat_POST;
 import static chatgvn.utils.ApiProject.API_requestchat_POST;
 import chatgvn.utils.HandleApi;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,22 +65,22 @@ public class GUIChat {
     public static JLabel _EmailInfo = new JLabel();
     public static JLabel _PhoneInfo = new JLabel();
     public static JButton _jbsetinfo = new JButton();
-    public static JScrollPane _ListOnlineScrollChatWindow;
+    public static JScrollPane _ListRoomScrollChatWindow;
     Logger log = Logger.getLogger(ActionGUI.class.getName());
     //list online
-    public static JList _ListOnline;
-    public static DefaultListModel _JlistModel;
-    public static JScrollPane _ListOnlineScrollPane;
+    public static JList _ListRoom;
+    public static DefaultListModel _JlistModelroom;
+    public static JScrollPane _ListRoomScrollPane;
     //
 
-    public static JButton _jbDanhSach = new JButton();
-    public static JButton _jbAcepFriend = new JButton();
+    public static JButton _jbDanhSachRoom = new JButton();
+    public static JButton _jbShowRequestKb = new JButton();
     public static JButton _jbAndFriend = new JButton();
 
     //
-    public static JList _ListOnlinekb;
+    public static JList _ListKb;
     public static DefaultListModel _JlistModelkb;
-    public static JScrollPane _ListOnlineScrollPanekb;
+    public static JScrollPane _ListKbScrollPane;
 
     public JLabel _NhapTenAddFriend = new JLabel();
     public JTextField _ToName = new JTextField();
@@ -87,8 +88,9 @@ public class GUIChat {
     public JTextField _ToLoginID = new JTextField();
 
     public JLabel _TrangThaiAcep = new JLabel();
-    public static JSONArray _JsonGroupNow;
-    public static JSONArray _JsonRequetsNow;
+    public static JSONArray _JsonArrayGroupNow;
+    public static JSONArray _JsonArrayRequetsNow;
+    public static JSONArray _JsonArrayFriendNow;
     public static JButton _AcceptInvite = new JButton();
     public static JButton _DeleteGroup = new JButton();
 
@@ -105,6 +107,13 @@ public class GUIChat {
     public static String stringcchat;
     //
 
+    ///thiet ke  cho List online Stars
+    public JButton _jbListFriend = new JButton();
+    public static DefaultListModel _JlistModelFriend;
+    public static JList _ListFriend;
+    public static JScrollPane _ListFriendScrollPane;
+//thiet ke  cho List online End
+
     public GUIChat(JSONObject info, String idlogin) {
         this._InfoTokenLogin = info;
         this._LoginId = idlogin;
@@ -112,12 +121,13 @@ public class GUIChat {
     }
 
     public void buildWindowLogin() {
-        _JlistModel = new DefaultListModel();
+        _JlistModelroom = new DefaultListModel();
         _JlistModelkb = new DefaultListModel();
+        _JlistModelFriend = new DefaultListModel();
         HandingCheckUser();
         handlingclose();
         _MainWindow.setTitle("ChatGvn");
-        _MainWindow.setSize(1000, 800);
+        _MainWindow.setSize(880, 690 - 40);
         _MainWindow.setResizable(false);
         _MainWindow.setLocationRelativeTo(null);
 
@@ -191,17 +201,17 @@ public class GUIChat {
             }
         });
         ////bat hanh dong dung chuot vao List room chat 
-        _ListOnline.addMouseListener(new java.awt.event.MouseAdapter() {
+        _ListRoom.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
 
                 try {
                     System.out.println("FUJKKKKKKKKK-------------------------");
-                    JSONObjectGroupNow = _JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex());
+                    JSONObjectGroupNow = _JsonArrayGroupNow.getJSONObject(_ListRoom.getSelectedIndex());
                     System.out.println(JSONObjectGroupNow);
                     System.out.println("FUJKKKKKKKKK-------------------------");
 
                     System.out.println("Check LogChat-------------------------");
-                    Loadlogchat(_JsonGroupNow.getJSONObject(_ListOnline.getSelectedIndex()).get("_id").toString());
+                    Loadlogchat(_JsonArrayGroupNow.getJSONObject(_ListRoom.getSelectedIndex()).get("_id").toString());
                 } catch (JSONException ex) {
                     System.out.println("loi hihi");
                 } catch (IOException ex) {
@@ -245,37 +255,106 @@ public class GUIChat {
             }
         });
         //bat hanh dong dung chuot List danh sach moi` ket ban
-        _ListOnlinekb.addMouseListener(new java.awt.event.MouseAdapter() {
+        _ListKb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 try {
-                    JSONObjectRequetsNow = _JsonRequetsNow.getJSONObject(_ListOnlinekb.getSelectedIndex());
+                    JSONObjectRequetsNow = _JsonArrayRequetsNow.getJSONObject(_ListKb.getSelectedIndex());
 
                     System.out.println(JSONObjectRequetsNow);
 
                 } catch (JSONException ex) {
-                    System.out.println("loi o _ListOnlinekb.addMouseListener");
+                    System.out.println("loi o _ListKb.addMouseListener");
                 }
                 _DeleteGroup.setVisible(false);
                 _AcceptInvite.setVisible(true);
 
             }
         });
+        //cath action clik List friend 
+        _ListFriend.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                System.out.println("huhuhu");
+                System.out.println(_ListFriend.getSelectedIndex());
+                int vtClinkListFriend = _ListFriend.getSelectedIndex();
 
-        _jbAcepFriend.addActionListener(new ActionListener() {
+                try {
+                    JSONObject x = _JsonArrayFriendNow.getJSONObject(vtClinkListFriend);
+                    String nameGroupcheck1 = x.getString("id") + " && " + _LoginId;
+                    String nameGroupcheck2 = _LoginId + " && " + x.getString("id");
+                    System.out.println("nameGroupcheck12=========");
+                    System.out.println(nameGroupcheck1);
+                    System.out.println(nameGroupcheck2);
+                    System.out.println("nameGroupcheck12=========");
+                    //lam gi do de no vao phong cua thang ban day
+                    for (int i = 0; i < _JsonArrayGroupNow.length(); i++) {
+
+                        if (_JsonArrayGroupNow.getJSONObject(i).getString("groupType").endsWith("0")) {
+                            String NameGroupI = _JsonArrayGroupNow.getJSONObject(i).getString("groupName");
+
+                            if (NameGroupI.endsWith(nameGroupcheck1) || NameGroupI.endsWith(nameGroupcheck2)) {
+                                System.out.println("DANG O DAY NE:");
+                                System.out.println(NameGroupI);
+                                 JSONObjectGroupNow = _JsonArrayGroupNow.getJSONObject(i);
+                                ///lay dc JsonojecGruopNOW roi _JsonArrayGroupNow.getJSONObject(i)
+                                Loadlogchat(JSONObjectGroupNow.getString("_id"));
+                                
+                                break;
+                                //
+                            }
+                        }
+                    }
+                _DeleteGroup.setVisible(true);
+                _AcceptInvite.setVisible(false);
+
+                    //}
+                } catch (JSONException ex) {
+                  
+                    System.out.println("LOI trong tam kiem soat");
+                } catch (Exception ex) {
+                    System.out.println("OH MY BABY BABYGIRL");
+                }
+
+            }
+        });
+        //bat hanh dong kick vao nut Invite
+        _jbShowRequestKb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 CheckRequest();
-                _ListOnlineScrollPane.setVisible(false);
-                _ListOnlineScrollPanekb.setVisible(true);
+                _jbListFriend.setBackground(Color.white);
+                _jbShowRequestKb.setBackground(new java.awt.Color(254, 248, 134));
+                _jbDanhSachRoom.setBackground(Color.white);
+                _ListFriendScrollPane.setVisible(false);
+                _ListRoomScrollPane.setVisible(false);
+                _ListKbScrollPane.setVisible(true);
+
             }
         });
-        //bat hanh dong kick vao nut room
-        _jbDanhSach.addActionListener(new ActionListener() {
+        //bat hanh dong kick vao JBUTTON ListFriend
+        _jbListFriend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+
+                _jbListFriend.setBackground(new java.awt.Color(254, 248, 134));
+                _jbShowRequestKb.setBackground(Color.white);
+                _jbDanhSachRoom.setBackground(Color.white);
+                _ListFriendScrollPane.setVisible(true);
+                _ListRoomScrollPane.setVisible(false);
+                _ListKbScrollPane.setVisible(false);
+
+            }
+        });
+        //bat hanh dong kick vao nut Roomvv
+        _jbDanhSachRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 CheckGroupNow();
-                _ListOnlineScrollPane.setVisible(true);
-                _ListOnlineScrollPanekb.setVisible(false);
+                _jbListFriend.setBackground(Color.white);
+                _jbShowRequestKb.setBackground(Color.white);
+                _jbDanhSachRoom.setBackground(new java.awt.Color(254, 248, 134));
+                _ListFriendScrollPane.setVisible(false);
+                _ListRoomScrollPane.setVisible(true);
+                _ListKbScrollPane.setVisible(false);
             }
         });
 
@@ -330,9 +409,10 @@ public class GUIChat {
                     System.out.println("STRINGGGGGG KQ1111111:");
                     if (fromApi.getString("message").equals("Left success")) {
                         System.out.println("day la dai phat thanh tieng noi viet name oke roi dm");
-                        _ChatWindow.setText("");
-                       // JSONObjectGroupNow = null;
+                        _ChatWindow.setText("ĐÃ XÓA GROUP NÀY HIHI ");
+                
                         CheckGroupNow();
+                         JSONObjectGroupNow = null;
                     }
 
                 } catch (JSONException ex) {
@@ -459,64 +539,46 @@ public class GUIChat {
     private void handeMessWebsocket(String mes) {
 
         try {
-            System.out.println("TỪ Sever:");
+            System.out.println("TỪ Sever:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             System.out.println(mes);
-            JSONObject jsonObject = new JSONObject(mes);
-            if (jsonObject.get("api").equals("indentification") && jsonObject.get("message").equals("success")) {
+            JSONObject jsonObjectsocket = new JSONObject(mes);
+
+            if (jsonObjectsocket.get("api").equals("indentification") && jsonObjectsocket.get("message").equals("success")) {
                 System.out.println("ban da san sàng de giửi tin");
                 readysendmes = true;
-            } else {
-                if(jsonObject.get("api").equals("send message")){
-                
-                
-                if (jsonObject.get("group_id").toString().equals(JSONObjectGroupNow.get("_id").toString())) {
-                    String conten = jsonObject.get("sender").toString() + ": " + jsonObject.get("message").toString();
+            } else if (jsonObjectsocket.get("api").equals("send message")) {
+
+                if (jsonObjectsocket.get("group_id").toString().equals(JSONObjectGroupNow.get("_id").toString())) {
+                    String conten = jsonObjectsocket.get("sender").toString() + ": " + jsonObjectsocket.get("message").toString();
                     stringcchat = conten;
                     _ChatWindow.setText(_ChatWindow.getText() + "\n" + conten);
-                    //
-                    JViewport vp = _ListOnlineScrollChatWindow.getViewport();
+                    ////ve lai chatwindow
+                    JViewport vp = _ListRoomScrollChatWindow.getViewport();
                     Point p = vp.getViewPosition();
                     p.y += _ChatWindow.getPreferredSize().height;
-                    _ListOnlineScrollChatWindow.revalidate();
+                    _ListRoomScrollChatWindow.revalidate();
                     vp.setViewPosition(p);
 
                 }
-                
+
+            } else if (jsonObjectsocket.get("api").equals("friend")) {
+                System.out.println("HREEEEEEE1 ARRAY:");
+                System.out.println(jsonObjectsocket.getString("friend"));
+                _JsonArrayFriendNow = new JSONArray(jsonObjectsocket.getString("friend"));
+                _JlistModelFriend.removeAllElements();
+                for (int i = 0; i < _JsonArrayFriendNow.length(); i++) {
+
+                    _JlistModelFriend.addElement(_JsonArrayFriendNow.getJSONObject(i).get("name"));
+
                 }
-                
 
             }
         } catch (JSONException ex) {
-            System.out.println("hihii");
+            System.out.println("ERRJSON");
+        } catch (Exception ex) {
+            System.out.println("ERRRRRRRXXXXXXXXX");
         }
 
-    }
-
-    public static void HandingCheckOnline() {
-        System.out.println("check Online---------");
-        HandleApi handle = new HandleApi();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("auth_token", _InfoTokenLogin.get("token"));
-            String StrJsonCheckUser = handle.postApi(API_CheckOnline_POST, jsonObject.toString());
-            System.out.println(StrJsonCheckUser);
-
-            JSONArray kq = new JSONArray(StrJsonCheckUser);
-            System.out.println("JSONarray:");
-            System.out.println(kq);
-
-            System.out.println("=====");
-            _JlistModel.clear();
-            for (int i = 0; i < kq.length(); i++) {
-                _JlistModel.addElement(kq.getJSONObject(i).get("user"));
-            }
-
-        } catch (JSONException ex) {
-            System.out.println("kamezogogo");
-        } catch (IOException ex) {
-
-        }
-        System.out.println("Online------");
     }
 
     private void CheckRequest() {
@@ -530,20 +592,27 @@ public class GUIChat {
             String StrJsonCheckGroup = handle.postApi(API_CheckRequest_POST + _LoginId, jsonObject.toString());
             System.out.println(StrJsonCheckGroup);
 
-            _JsonRequetsNow = new JSONArray(StrJsonCheckGroup);
+            _JsonArrayRequetsNow = new JSONArray(StrJsonCheckGroup);
             System.out.println("JSONarray:");
-            System.out.println(_JsonRequetsNow);
+            System.out.println(_JsonArrayRequetsNow);
 
             System.out.println("=====");
             _JlistModelkb.clear();
-            for (int i = 0; i < _JsonRequetsNow.length(); i++) {
-                //_JlistModelkb.addElement(kq.getJSONObject(i).get("_id"));
-                _JlistModelkb.addElement(_JsonRequetsNow.getJSONObject(i).get("groupName"));
+            for (int i = 0; i < _JsonArrayRequetsNow.length(); i++) {
+                if (_JsonArrayRequetsNow.getJSONObject(i).getString("groupType").endsWith("0")) {
+                    String ss = _JsonArrayRequetsNow.getJSONObject(i).getString("groupName");
+                    String[] a = ss.split("&&");
+                    _JlistModelkb.addElement(a[1]);
+                } else {
+                    _JlistModelkb.addElement(_JsonArrayRequetsNow.getJSONObject(i).getString("groupName"));
+                }
+
             }
 
         } catch (JSONException ex) {
             System.out.println("kamezogogo");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
+            System.out.println("LOI ne");
 
         }
         System.out.println("check Request---------");
@@ -560,15 +629,15 @@ public class GUIChat {
             String StrJsonCheckGroup = handle.postApi(API_CheckGroup_POST + _LoginId, jsonObject.toString());
             System.out.println(StrJsonCheckGroup);
 
-            _JsonGroupNow = new JSONArray(StrJsonCheckGroup);
+            _JsonArrayGroupNow = new JSONArray(StrJsonCheckGroup);
             System.out.println("JSONarray:");
-            System.out.println(_JsonGroupNow);
+            System.out.println(_JsonArrayGroupNow);
 
             System.out.println("=====");
-            _JlistModel.clear();
-            for (int i = 0; i < _JsonGroupNow.length(); i++) {
-                // _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("_id"));
-                _JlistModel.addElement(_JsonGroupNow.getJSONObject(i).get("groupName"));
+            _JlistModelroom.clear();
+            for (int i = 0; i < _JsonArrayGroupNow.length(); i++) {
+                // _JlistModel.addElement(_JsonArrayGroupNow.getJSONObject(i).get("_id"));
+                _JlistModelroom.addElement(_JsonArrayGroupNow.getJSONObject(i).get("groupName"));
             }
 
         } catch (JSONException ex) {
@@ -581,122 +650,171 @@ public class GUIChat {
 
     private void configureWindowLogin() throws JSONException {
         //    _MainWindow.setBackground(new java.awt.Color(0, 0, 0));
+        ///thiet lap giao dien(quan trong vcđ)
         _MainWindow.getContentPane().setLayout(null);
         _MainWindow.getContentPane().setBackground(new java.awt.Color(148, 170, 214));
+///////****************************Cac LIST START***********************************************////
 
-        //create 1 list
+        ///////////1111111111**LIST ROOM***11111//////////
         //set model list
         //_JlistModel = new DefaultListModel();
-        //set list 54	117	23 // 16	54	103
-        _ListOnline = new JList(_JlistModel);
-        _ListOnline.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-       // _ListOnline.setSelectedIndex(0);
-        _ListOnline.setForeground(new java.awt.Color(54, 117, 23));
-        _ListOnline.setSelectionForeground(new java.awt.Color(16, 54, 103));
-        //set list on ScrollPane
-        _ListOnlineScrollPane = new JScrollPane(_ListOnline);
-        _ListOnlineScrollPane.setBounds(0, 200, 260, 560);
-        _MainWindow.getContentPane().add(_ListOnlineScrollPane);
+        _ListRoom = new JList(_JlistModelroom);
+        _ListRoom.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // _ListRoom.setSelectedIndex(0);
+        _ListRoom.setForeground(new java.awt.Color(54, 117, 23));
+        _ListRoom.setSelectionForeground(new java.awt.Color(16, 54, 103));
+        _ListRoomScrollPane = new JScrollPane(_ListRoom);
+        _ListRoomScrollPane.setBounds(0, 140 - 30, 260, 560 - 130);
+        _ListRoomScrollPane.setVisible(false);
+        _MainWindow.getContentPane().add(_ListRoomScrollPane);
+        ///////////1111111111**LIST ROOM***11111//////////
 
-        ////create 1 list kb
-        _ListOnlinekb = new JList(_JlistModelkb);
-        _ListOnlinekb.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-       // _ListOnlinekb.setSelectedIndex(0);
-        _ListOnlinekb.setForeground(new java.awt.Color(54, 117, 23));
-        _ListOnlinekb.setSelectionForeground(new java.awt.Color(16, 54, 103));
+        ///////////2222222222**LIST MOI Kb***22222///////////       
+        _ListKb = new JList(_JlistModelkb);
+        _ListKb.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _ListKb.setForeground(new java.awt.Color(54, 117, 23));
+        _ListKb.setSelectionForeground(new java.awt.Color(16, 54, 103));
         //set list on ScrollPane
-        _ListOnlineScrollPanekb = new JScrollPane(_ListOnlinekb);
-        _ListOnlineScrollPanekb.setBounds(0, 200, 260, 560);
-        _ListOnlineScrollPanekb.setVisible(false);
-        _MainWindow.getContentPane().add(_ListOnlineScrollPanekb);
+        _ListKbScrollPane = new JScrollPane(_ListKb);
+        _ListKbScrollPane.setBounds(0, 140 - 30, 260, 560 - 130);
+        _ListKbScrollPane.setVisible(false);
+        _MainWindow.getContentPane().add(_ListKbScrollPane);
+        ///////////2222222222**LIST MOI Kb***22222///////////
 
-        // _ChatWindow.
-        _ChatWindow.setForeground(new java.awt.Color(0, 0, 255));
+        ///////////3333333333**LIST Show Friend***333333333///////////
+//        _JlistModelFriend.addElement("11111");
+//        _JlistModelFriend.addElement("233333");
+        _JlistModelFriend.addElement("list friend:load....");
+        _ListFriend = new JList(_JlistModelFriend);
+        _ListFriend.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        _ListFriend.setForeground(new java.awt.Color(54, 117, 23));
+        _ListFriend.setSelectionForeground(new java.awt.Color(16, 54, 103));
+        //set list on ScrollPane
+        _ListFriendScrollPane = new JScrollPane(_ListFriend);
+        _ListFriendScrollPane.setBounds(0, 140 - 30, 260, 560 - 130);
+        _ListFriendScrollPane.setVisible(true);
+        _MainWindow.getContentPane().add(_ListFriendScrollPane);
+
+        ///////////3333333333**LIST Show Friend***333333333///////////
+        //////////////****************************Cac LIST END***********************************************////
+        // _ChatWindow.**********************
+        Font font = new Font("Arial", Font.ITALIC, 17);
+        //  textArea.setFont(font);
+        _ChatWindow.setForeground(new Color(178, 0, 31));
         _ChatWindow.setEditable(false);
         _ChatWindow.setColumns(20);
         _ChatWindow.setRows(5);
-        _ListOnlineScrollChatWindow = new JScrollPane(_ChatWindow);
-        _ListOnlineScrollChatWindow.setViewportView(_ChatWindow);
-        _MainWindow.getContentPane().add(_ListOnlineScrollChatWindow);
-        _ListOnlineScrollChatWindow.setBounds(270, 200, 700, 480);
+        _ChatWindow.setFont(font);
+        _ListRoomScrollChatWindow = new JScrollPane(_ChatWindow);
+        _ListRoomScrollChatWindow.setViewportView(_ChatWindow);
+        _MainWindow.getContentPane().add(_ListRoomScrollChatWindow);
+        _ListRoomScrollChatWindow.setBounds(270, 140 - 30, 600, 430);
 
-        //_Chatmsg
-        _Chatmsg.setForeground(new java.awt.Color(0, 0, 255));
-        //  _Chatmsg.requestFocus();
+        // _ChatWindow.**********************
+        //_Chatmsg***********
+        _Chatmsg.setForeground(new java.awt.Color(178, 0, 31));
+        _Chatmsg.requestFocus();
+        _Chatmsg.setFont(font);
         _MainWindow.getContentPane().add(_Chatmsg);
-        _Chatmsg.setBounds(270, 710, 600, 50);
+        _Chatmsg.setBounds(270, 650 - 50 - 30, 500, 35);
 
         //_jbsendchat
         _jbsendchat.setText("Send");
+        _jbsendchat.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_jbsendchat);
-        _jbsendchat.setBounds(880, 725, 90, 25);
+        _jbsendchat.setBounds(780, 665 - 50 - 40, 90, 25);
 
-        //_ChatSlogan
-        _ChatSlogan.setText("không yêu đừng nói lời cay đắng <3 (không trashtalk)");
+        //_ChatSlogan197	124	172
+        _ChatSlogan.setForeground(new Color(143, 0, 109));
+        _ChatSlogan.setText("Không yêu đừng nói lời trashtalk <3 ");
         _MainWindow.getContentPane().add(_ChatSlogan);
-        _ChatSlogan.setBounds(270, 685, 300, 25);
+        _ChatSlogan.setBounds(270, 625 - 50 - 30, 300, 25);
 
+        ////////////////*****INFO THONG TIN NG DUNG Star*****//////////////////
+        //27	79	147
         //_nameinfo
         //  _nameinfo.setText("User Name:" + JsonCheckUser.getString("userName"));
+        _nameinfo.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_nameinfo);
-        _nameinfo.setBounds(10, 40, 300, 50);
+        _nameinfo.setBounds(10, 20, 300, 50);
         //_EmailInfo
-        //  _EmailInfo.setText("Email:" + JsonCheckUser.getString("email"));
+        _EmailInfo.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_EmailInfo);
-        _EmailInfo.setBounds(10, 60, 300, 50);
+        _EmailInfo.setBounds(200, 20, 300, 50);
         //_PhoneInfo
-        //  _PhoneInfo.setText("SĐT:" + JsonCheckUser.getString("phone"));
+        _PhoneInfo.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_PhoneInfo);
-        _PhoneInfo.setBounds(10, 80, 300, 50);
+        _PhoneInfo.setBounds(550, 20, 300, 50);
+
+        JLabel a = new JLabel();
+        a.setForeground(new Color(27, 79, 147));
+        a.setText("---------------------------------------------------------------------------------------------------------------------------"
+                + "----------------------------------------------------------------------------------------------------------------------------");
+        _MainWindow.getContentPane().add(a);
+        a.setBounds(0, 40, 1000, 50);
 
         //_jbsetinfo
+        _jbsetinfo.setForeground(new Color(27, 79, 147));
         _jbsetinfo.setText("Set Info");
         _MainWindow.getContentPane().add(_jbsetinfo);
-        _jbsetinfo.setBounds(250, 40, 90, 25);
+        _jbsetinfo.setBounds(700, 30, 90, 25);
 
         //_gioithieuinfo
+        _gioithieuinfo.setForeground(new Color(27, 79, 147));
         _gioithieuinfo.setText("------THÔNG TIN NGƯỜI DÙNG------------");
         _MainWindow.getContentPane().add(_gioithieuinfo);
-        _gioithieuinfo.setBounds(10, 0, 500, 50);
+        _gioithieuinfo.setBounds(350, 0, 500, 50);
         /////
 
-        /////_jbDanhSach
-        _jbDanhSach.setText("Room");
-        _MainWindow.getContentPane().add(_jbDanhSach);
-        _jbDanhSach.setBounds(10, 170, 90, 25);
+        ////////////////*****INFO THONG TIN NG DUNG END*****//////////////////
+        //0,580
+        ///_jbListFriend  229	70	70
+        _jbListFriend.setText("List Friend");
+        _jbListFriend.setForeground(new Color(27, 79, 147));
+        _jbListFriend.setBackground(new java.awt.Color(254, 248, 134));
+        _MainWindow.getContentPane().add(_jbListFriend);
+        _jbListFriend.setBounds(0, 580 + 20 - 30, 95, 25);
 
-        ///
-        _jbAcepFriend.setText("Mời");
-        _MainWindow.getContentPane().add(_jbAcepFriend);
-        _jbAcepFriend.setBounds(110, 170, 90, 25);
+        /////_jbDanhSachRoom
+        _jbDanhSachRoom.setText("Room");
+        _jbDanhSachRoom.setForeground(new Color(27, 79, 147));
+        _MainWindow.getContentPane().add(_jbDanhSachRoom);
+        _jbDanhSachRoom.setBounds(100, 580 + 20 - 30, 70, 25);
 
-        _jbAndFriend.setText("Chat Friend");
+        ///ds moi Invite 
+        _jbShowRequestKb.setText("Invite");
+        _jbShowRequestKb.setForeground(new Color(27, 79, 147));
+        _MainWindow.getContentPane().add(_jbShowRequestKb);
+        _jbShowRequestKb.setBounds(175, 580 + 20 - 30, 90, 25);
+
+        _jbAndFriend.setText("Add Friend");
+        _jbAndFriend.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_jbAndFriend);
-        _jbAndFriend.setBounds(810, 170, 150, 25);
+        _jbAndFriend.setBounds(930 - 170, 110 - 30, 110, 25);
 
         //_jbCreateGroup
         _jbCreateGroup.setText("Create Group");
+        _jbCreateGroup.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_jbCreateGroup);
-        _jbCreateGroup.setBounds(500, 170, 150, 25);
+        _jbCreateGroup.setBounds(620 - 100, 110 - 30, 110, 25);
 
         //_jbInsertGroup
         _jbInsertGroup.setText("Insert Group");
+        _jbInsertGroup.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_jbInsertGroup);
-        _jbInsertGroup.setBounds(660, 170, 120, 25);
-
-        _TrangThaiAcep.setForeground(Color.yellow);
-        _MainWindow.getContentPane().add(_TrangThaiAcep);
-        _TrangThaiAcep.setBounds(750, 150, 300, 20);
+        _jbInsertGroup.setBounds(780 - 140, 110 - 30, 110, 25);
 
         _AcceptInvite.setText("Accept");
+        _AcceptInvite.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_AcceptInvite);
-        _AcceptInvite.setBounds(210, 170, 90, 25);
-        _AcceptInvite.setVisible(false);
+        _AcceptInvite.setBounds(170, 110 - 30, 90, 25);
+        _AcceptInvite.setVisible(true);
 
         _DeleteGroup.setText("Delete");
+        _DeleteGroup.setForeground(new Color(27, 79, 147));
         _MainWindow.getContentPane().add(_DeleteGroup);
         //310, 170, 90, 25
-        _DeleteGroup.setBounds(210, 170, 90, 25);
+        _DeleteGroup.setBounds(170, 110 - 30, 90, 25);
         _DeleteGroup.setVisible(false);
 
         ///

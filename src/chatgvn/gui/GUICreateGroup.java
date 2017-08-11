@@ -136,6 +136,8 @@ public class GUICreateGroup {
                     if(kq.getString("message").equals("Request success")){
                           status2.setText("Thành Công rồi đới !!!!!!!!");
                           GUIChat.CheckGroupNow();
+                    }else if(kq.getString("message").equals("Contain duplicate member")){
+                        status2.setText("Thất bại !!!!!!!!");
                     }
                     System.out.println("========aaaaaa===============================");
 

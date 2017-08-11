@@ -96,7 +96,7 @@ public class GUIaddFriend {
                         throw new Exception("input error kien!!!!");
                     }
 
-                    jsonObject.put("groupName", _AddName.getText() + " && " + JsonCheckUser.getString("userName"));
+                    jsonObject.put("groupName", _AddID.getText() + " && " + JsonCheckUser.getString("loginId"));
                     jsonObject.put("groupType", "0");
                     //member in group
                     JSONObject jsonObject1 = new JSONObject();
@@ -134,6 +134,9 @@ public class GUIaddFriend {
                         status.setText("Giửi lời mời thành công!!!");
                         GUIChat.CheckGroupNow();
 
+                    }else  if (kq.getString("message").equals("Invalid friend")){
+                         status.setText("Ko thể thực hiện yêu cầu !!");
+                     
                     }
                 } catch (JSONException ex) {
                     System.out.println("kamezogogo");
@@ -141,7 +144,7 @@ public class GUIaddFriend {
                    System.out.println("Loi tai HandAPi  _JBAddFriend.addActionListener ");
                 } catch (Exception ex) {
                     System.out.println("nhap thieu thong tin !!!");
-                     status.setText("nhap thieu thong tin !!!");
+                     status.setText("Ko thể thực hiện yêu cầu !!!");
                 }
                 System.out.println("END Add Friend user---------------");
 

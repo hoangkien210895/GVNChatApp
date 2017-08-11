@@ -48,8 +48,8 @@ public class GUIInfo {
     public JTextField _JTFquestion = new JTextField();
 
     ///
-      public JLabel _JLChangeoke = new JLabel();
-    
+    public JLabel _JLChangeoke = new JLabel();
+
     public void buildWindowLogin() {
         pess();
         handlingclose();
@@ -99,7 +99,18 @@ public class GUIInfo {
                     jsonObject.put("auth_token", auth_token);
                     String StrChangeUser = handle.postApi(API_SET_USERNAME_POST, jsonObject.toString());
                     System.out.println(StrChangeUser);
-                    GUIChat.HandingCheckUser();
+                 
+                    JSONObject toWebSocket = new JSONObject();
+                    toWebSocket.put("api", "change username");
+                    toWebSocket.put("logID",logInId);
+                    toWebSocket.put("name_new", _JTFChangName.getText());
+                    toWebSocket.put("authen_token",auth_token);
+                    
+                    System.out.println("=====PAR TO WEBSOCKET======");
+                    System.out.println(toWebSocket.toString());
+                    System.out.println("=====PAR TO WEBSOCKET END ======");
+                     GUIChat.a.sendMessage(toWebSocket.toString());
+                     GUIChat.HandingCheckUser();
                 } catch (JSONException ex) {
                     Logger.getLogger(GUIInfo.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
@@ -108,8 +119,8 @@ public class GUIInfo {
 
             }
         });
-        
-           _JBsendPass.addActionListener(new ActionListener() {
+
+        _JBsendPass.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 System.out.println("this fucking par");
@@ -122,14 +133,14 @@ public class GUIInfo {
                     jsonObject.put("loginId", logInId);
                     jsonObject.put("password", _JTFChangPass.getText());
                     jsonObject.put("password_question", "1");
-                    jsonObject.put("password_answer",_JTFquestion.getText());
+                    jsonObject.put("password_answer", _JTFquestion.getText());
                     String StrChangeUser = handle.postApi(API_ChangPass_POST, jsonObject.toString());
                     System.out.println(StrChangeUser);
-                     JSONObject kq = new JSONObject(StrChangeUser);
-                     if(kq.get("status").equals("success")){
-                         _JLChangeoke.setText("=====Thành Công=====");
-                     }
-                    
+                    JSONObject kq = new JSONObject(StrChangeUser);
+                    if (kq.get("status").equals("success")) {
+                        _JLChangeoke.setText("=====Thành Công=====");
+                    }
+
                 } catch (JSONException ex) {
                     Logger.getLogger(GUIInfo.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
@@ -138,7 +149,7 @@ public class GUIInfo {
 
             }
         });
-        
+
     }
 
     private void configureWindowLogin() {
@@ -157,8 +168,8 @@ public class GUIInfo {
         _JBsend.setText("Chang Name");
         _MainWindow.getContentPane().add(_JBsend);
         _JBsend.setBounds(70, 80, 150, 25);
-        
-           /////////////////////////
+
+        /////////////////////////
         _JLChangePass.setText("Nhập Pass mới :");
         _MainWindow.getContentPane().add(_JLChangePass);
         _JLChangePass.setBounds(70, 120, 150, 25);
@@ -178,8 +189,7 @@ public class GUIInfo {
         _JBsendPass.setText("Change Pass");
         _MainWindow.getContentPane().add(_JBsendPass);
         _JBsendPass.setBounds(70, 230, 150, 25);
-       
-        
+
         _JLChangeoke.setText("=====----=====");
         _MainWindow.getContentPane().add(_JLChangeoke);
         _JLChangeoke.setBounds(100, 260, 150, 25);
